@@ -1,0 +1,89 @@
+plugins {
+    id 'java'
+    id 'maven'
+    id 'maven-publish'
+}
+
+group 'cn.kanyun'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+repositories {
+    mavenLocal()
+    jcenter()
+    mavenCentral()
+}
+
+task sourcesJar (type:Jar) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.java
+}
+
+//设置任务依赖关系,打jar包的同时,打源码包
+jar.dependsOn(sourcesJar)
+
+/**
+ * 默认使用gradlew clean install命令时,仅仅只是安装编译好的包,源码包
+ * 是不会安装到maven仓库的,添加此配置可以将源码包打入到本地maven仓库
+ * doc包也可以如法炮制
+ */
+artifacts {
+    archives sourcesJar
+}
+
+publishing {
+    publications {
+        myPublication(MavenPublication) {
+//            如果是war包填写components.web，如果是jar包填写components.java
+            from components.java
+//            指定group/artifact/version信息，可以不填。默认使用项目group/name/version作为groupId/artifactId/version
+//            groupId需要注意一下,如果下面仓库的配置是oss.sonatype.org(即中央仓库),那么这里的groupId必须为你在sonatype中申请的ISSUE中设置的ID,如果不是,执行gradlew publish命令会报403错误
+            groupId "io.github.chenwuwen"
+            artifactId "$project.name"
+            version "$version"
+            artifact(sourcesJar) {
+                classifier = 'sources'
+            }
+        }
+    }
+    repositories {
+        maven {
+//            这里如果配置的是sonatype(中央仓库的地址),需要注意上方的groupId,应该跟sonatype中的对应的ISSUE中设置的Group Id 一致
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+            credentials {
+                username = 'kanyun'
+                password = 'Chenwuwen@@321'
+            }
+        }
+    }
+}
+
+/**
+ * 创建src目录
+ */
+task createDirs() {
+    sourceSets*.java.srcDirs*.each {
+        it.mkdirs()
+    }
+    sourceSets*.resources.srcDirs*.each {
+        it.mkdirs()
+    }
+}
+
+dependencies {
+
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
+
+    implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
+
+    compileOnly group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
+
+    implementation group: 'com.google.guava', name: 'guava', version: '28.2-jre'
+
+
+}
