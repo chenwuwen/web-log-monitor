@@ -60,7 +60,7 @@ cn.kanyun.monitor.logback.filter.WebLogFilter
 这样就配置完成了。
 
 
-> **注意: **如果使用的是Springboot,那么还需要在启动类上添加一个@ServletComponentScan("cn.kanyun")注解。
+> **注意:** 如果使用的是Springboot,那么还需要在启动类上添加一个@ServletComponentScan("cn.kanyun")注解。
 
 
 配置完成之后,就可以启动项目了。
@@ -69,7 +69,7 @@ cn.kanyun.monitor.logback.filter.WebLogFilter
 
 就可以打开WebLogMonitor的认证界面,输入用户名密码即可登录
 
-> **默认用户名/密码：admin/admin
+> **默认** 用户名/密码：admin/admin
 
 登录完成就可以查看到实时日志了
 
