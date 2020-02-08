@@ -12,12 +12,12 @@ import java.io.IOException;
 /**
  * 权限过滤器
  * 拦截 uri : /log/*
- *
+ * <p>
  * Filter的过滤顺序：
  * web.xml中是按照注册Filter的顺序来决定过滤器执行顺序
  * 注解形式的过滤器,则是根据当前类的名字的自然排序,因此这个值,应该存在规律
  */
-@WebFilter(filterName = "AuthFilter", urlPatterns = "/web/log/push/*")
+@WebFilter(filterName = "AuthFilter", urlPatterns = "/web/log/push/*", asyncSupported = true)
 public class AuthFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

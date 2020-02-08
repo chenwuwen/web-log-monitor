@@ -13,52 +13,93 @@
 <body class="layui-layout-body">
 
 
-    <div class="layui-row layui-col-space15" style="padding: 20px; background-color: #F2F2F2;">
+<div class="layui-row layui-col-space15" style="padding: 20px; background-color: #F2F2F2;">
 
-        <div class="layui-col-md12">
-            <div class="layui-card">
-                <div class="layui-card-header">
-                    日志输出
-                    <div class="layui-btn-group layuiadmin-btn-group">
-                        <button class="layui-btn layui-btn-primary layui-btn-xs" onClick="clearLog()">
-                            <i class="layui-icon layui-icon-delete"></i> 清空
-                        </button>
-                        <button class="layui-btn layui-btn-primary layui-btn-xs" onClick="downloadLog()">
-                            <i class="layui-icon layui-icon-download-circle"></i>下载
-                        </button>
-                    </div>
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                日志输出
+                <div class="layui-btn-group layuiadmin-btn-group">
+                    <button class="layui-btn layui-btn-primary layui-btn-xs" onClick="clearLog()">
+                        <i class="layui-icon layui-icon-delete"></i> 清空
+                    </button>
+                    <button class="layui-btn layui-btn-primary layui-btn-xs" onClick="downloadLog()">
+                        <i class="layui-icon layui-icon-download-circle"></i>下载
+                    </button>
                 </div>
-
-                <div id="web_log" class="layui-card-body layui-bg-black">
-                    <div contenteditable="true" class="layui-bg-black log_container">
-
-                    </div>
-                </div>
-
             </div>
+
+            <div id="web_log" class="layui-card-body layui-bg-black">
+                <!--日志内容区-->
+                <div contenteditable="true" class="layui-bg-black log_container">
+
+                </div>
+
+                <!-- 上翻页,下翻页-->
+
+                <div class="page">
+                    <div class="page_item up_page" onclick="topPage()">
+                        <!--                        <i class="layui-icon layui-icon-up" style="font-size: 30px; color: #f2f2f2;"></i>-->
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-zhidingxian"></use>
+                        </svg>
+                    </div>
+                    <div class="page_item down_page" onclick="downPage()">
+                        <!--                        <i class="layui-icon layui-icon-down" style="font-size: 30px; color: #f2f2f2;"></i>-->
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#icon-zhidixian"></use>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
+</div>
 
 
 </body>
 
+
 <script type="text/html" id="log_segment_html">
     <div>
-        <span class="log_time"></span>
-        <span class="log_level"></span>
-        <span class="log_threadName"></span>
-        <span class="log_className" style="color:#009688"></span>
-        <span class="log_body"></span>
-
+        <span class="log_time">{{timestamp}}</span>
+        <span class="log_level level_{{level}}">{{level}}</span>
+        <span class="log_threadName">[{{threadName}}]</span>
+        <span class="log_className" style="color:#009688">{{className}}</span>
+        <span class="log_body">{{body}}</span>
     </div>
 </script>
 
+<!--各个js模板引擎对比：https://www.cnblogs.com/guohu/p/3870677.html-->
+<!--这里使用art-template-->
+<script src="js/template-web.js" charset="utf-8"></script>
 <script src="layui/layui.all.js" charset="utf-8"></script>
 <script src="js/jquery.min.js" charset="utf-8"></script>
 <script src="js/utils.js" charset="utf-8"></script>
+<!--引入了eventsource.min.js脚本，加入这个脚本是为了让IE8及以上版本的IE可以支持EventSource，EventSource在目前所有版本都不支持。在其他主流浏览器如谷歌，火狐等都是支持的-->
+<script src="js/eventsource.min.js" charset="utf-8"></script>
 <script src="js/log.js" charset="utf-8"></script>
+<script src="js/iconfont.js" charset="utf-8"></script>
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 <script type="application/javascript">
+
+
+    var layer;
+
+    // 滚动条置顶标识,当为0时,说明,是由于内容未填满导致的，为1时,说明是手动使滚动条置顶
+    var handleTop = 0;
+
+
+    layui.use('layer', function () {
+        layer = layui.layer;
+    })
+
+    // 生产环境不建议使用console.log(),因为会耗费性能 这段代码会使console.log()什么都不做
+    // window.console = {
+    //     log: function () {
+    //     }
+    // }
 
     if (!!window.EventSource) {
         // web logger sse监听 使用 SSE 时，浏览器首先生成一个EventSource实例，向服务器发起连接。 withCredentials属性，表示是否一起发送 Cookie
@@ -79,33 +120,35 @@
         // 已经设置了textarea为readOnly,之所以没有设置为disabled是因为disabled不能复制,同时需要注意,接收的内容是需要追加到textarea中的
         source.onmessage = function (event) {
             console.log("SSE 服务端推送日志信息")
-            console.log(event);
+
+            // 待插入的Dom
+            let log_segment_dom;
+
+            // console.log(event);
             let res = event.data
-            console.log(typeof res);
-            res = JSON.parse(res)
-            let body = res['body']
-            let timestamp = res['timestamp']
-            let threadName = res['threadName']
-            let className = res['className']
-            let level = res['level']
+            // String类型
+            console.log("event.data 类型:" + typeof res);
+            console.log(res);
 
-            $("#log_segment_html .log_time").html(timestamp);
-
-            $("#log_segment_html .log_level").html(level);
-            if ("ERROR" == level) {
-                $("#log_segment_html .log_level").addClass("level_error")
-            } else {
-                $("#log_segment_html .log_level").addClass("level_debug")
+            // 如果是空json,就不继续执行了
+            if (res == "{}") {
+                return
             }
-            $("#log_segment_html .log_threadName").html("[" + threadName + "]")
-            $("#log_segment_html .log_className").html(className)
-            $("#log_segment_html .log_body").html(body)
 
-            let log_html = $("#log_segment_html").html();
-            console.log(log_html);
-            $("#web_log").children("div").append(log_html)
-            // 设置 div 默认滑动到底部
-            $('#web_log .log_container').scrollTop($('#web_log .log_container')[0].scrollHeight);
+            // 将json字符转转换为json对象
+            res = JSON.parse(res);
+
+            // 使用art-template模板引擎渲染
+            log_segment_dom = template('log_segment_html', res);
+
+            $("#web_log").children(".log_container").append(log_segment_dom)
+
+            // 新加入的元素,其实就是log_segment_dom,但是这里需要用jquery去获取添加后的dom
+            let newElement = $(".log_container").children("div:last-child")[0]
+
+            // 设置滚动条位置
+            setScrollPosition(newElement)
+
 
         };
 
@@ -113,12 +156,21 @@
         source.onerror = function (event) {
             console.log("SSE通信发生错误,默认会自动重连,如果不需要自动重连,需要手动close掉");
             console.log(event);
-            source.close()
+            // source.close()将关闭自动重连
+            // source.close()
+            layer.msg("获取日志信息失败,稍后将自动重试")
         };
     } else {
         // 浏览器不支持 Server-Sent..
         console.log("当前浏览器不支持Server-Sent Event");
     }
+
+
+
+
+
+
+
 
 </script>
 

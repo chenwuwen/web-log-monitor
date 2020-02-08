@@ -1,12 +1,12 @@
 #web_log {
     width: 100%;
-    height: auto;
+    height: 40rem;
     padding: 0px;
 }
 
 #web_log .log_container {
     width: 100%;
-    height: 30rem;
+    height: 100%;
     padding: 0px;
     border: none;
     resize: none;
@@ -22,6 +22,41 @@
     outline: none; /*去掉点击边框*/
 }
 
+
+.page {
+    width: auto;
+    float: right;
+    right: 30px;
+    position: relative;
+    bottom: 20rem;
+}
+
+.page .page_item {
+    margin: 20px 0px;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    background: #c3d0d045;
+    border-radius: 25px;
+    position: relative;
+    cursor: pointer;
+    visibility: hidden;
+}
+
+.page .page_item:active {
+    top: 2px; /**向下偏移2px **/
+}
+
+/*iconfont引用*/
+.icon {
+    width: 1.85rem;
+    height: 1.1rem;
+    vertical-align: -0.15em;
+    fill: currentColor;
+    overflow: hidden;
+    font-size: 1.7rem;
+}
+
 /*滚动条整体样式*/
 #web_log .log_container::-webkit-scrollbar {
     width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
@@ -35,7 +70,7 @@
     background: #ffffff61;
 }
 
-#web_log .layui-icon-screen-full{
+#web_log .layui-icon-screen-full {
     position: absolute;
     right: 2rem;
 }
@@ -47,14 +82,23 @@
     background: rgba(0, 0, 0, 0.1);
 }
 
-.log_span{
+.log_span {
     margin-right: 5px;
 }
 
-.level_debug, .level_info {
+.level_DEBUG {
+    color: #FFB03F;
+}
+
+.level_INFO {
+    color: #00ceff;
+
+}
+
+.level_WARN {
     color: gold;
 }
 
-.level_error {
+.level_ERROR {
     color: red;
 }

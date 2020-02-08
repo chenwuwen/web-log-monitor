@@ -18,7 +18,7 @@ import java.util.List;
  * web.xml中是按照注册Filter的顺序来决定过滤器执行顺序
  * 注解形式的过滤器,则是根据当前类的名字的自然排序,因此这个值,应该存在规律
  */
-@WebFilter(filterName = "StaticFileFilter", urlPatterns = "/web/log/*")
+@WebFilter(filterName = "StaticFileFilter", urlPatterns = "/web/log/*", asyncSupported = true)
 public class StaticFileFilter implements Filter {
 
     /**
@@ -26,10 +26,6 @@ public class StaticFileFilter implements Filter {
      */
     private static final List<String> STATIC_FILE = new ArrayList<>();
 
-    /**
-     * 静态资源文件路径前缀
-     */
-    private static final String STATIC_FILE_PREFIX = "static/http/resources";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -82,8 +78,6 @@ public class StaticFileFilter implements Filter {
         }
 
 
-        response.setCharacterEncoding("utf-8");
-
         if (contextPath == null) { // root context
             contextPath = "";
         }
@@ -101,13 +95,23 @@ public class StaticFileFilter implements Filter {
 
     }
 
-
+    /**
+     * 返回静态资源文件
+     *
+     * @param relativeFilePath 相对资源文件路径
+     * @param uri              请求地址
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void returnResourceFile(String relativeFilePath, String uri, HttpServletResponse response)
             throws ServletException,
             IOException {
 
+        response.setCharacterEncoding("utf-8");
+
 //        得到文件路径
-        String filePath = getFilePath(relativeFilePath);
+        String filePath = Utils.getFilePath(relativeFilePath);
 
 //        如果是图片/字体资源,返回流
         if (relativeFilePath.endsWith(".jpg")
@@ -127,7 +131,7 @@ public class StaticFileFilter implements Filter {
         }
 
 
-//        非图片资源,则将资源文件读取成字符串
+//        非图片资源,则将资源文件[如html/css/js]等读取成字符串
         String text = Utils.readFromResource(filePath);
 
         if (text == null) {
@@ -149,12 +153,5 @@ public class StaticFileFilter implements Filter {
         response.getWriter().write(text);
     }
 
-    /**
-     * 得到静态文件的绝对路径
-     * @param relativeFilePath 静态文件的相对路径
-     * @return
-     */
-    private String getFilePath(String relativeFilePath) {
-        return STATIC_FILE_PREFIX + relativeFilePath;
-    }
+
 }

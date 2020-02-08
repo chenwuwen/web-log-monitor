@@ -23,7 +23,7 @@ public enum LogQueue {
      * 自定义构造方法,用于构造blockingQueue象
      * 枚举的构造方法都是私有的
      */
-     LogQueue() {
+    LogQueue() {
         blockingQueue = new LinkedBlockingQueue<>(QUEUE_MAX_SIZE);
     }
 
@@ -46,15 +46,18 @@ public enum LogQueue {
 
     /**
      * 消息出队
+     * 取出消息并移除
      *
      * @return
      */
     public LogMessage poll() {
-//            take():取走BlockingQueue里排在首位的对象,若BlockingQueue为空,阻断进入等待状态直到Blocking有新的对象被加入为止
+//            peek 返回队列头部的元素 如果队列为空，则返回null
+//            take():移除并返回BlockingQueue里排在首位的对象,若BlockingQueue为空,阻断进入等待状态直到Blocking有新的对象被加入为止
 //            message = this.blockingQueue.take();
-//            poll(time):取走BlockingQueue里排在首位的对象,若不能立即取出,则可以等time参数规定的时间,取不到时返回null
+//            poll(time):移除并返回BlockingQueue里排在首位的对象,若不能立即取出,则可以等time参数规定的时间,取不到时返回null
         LogMessage message = blockingQueue.poll();
 
         return message;
     }
+
 }

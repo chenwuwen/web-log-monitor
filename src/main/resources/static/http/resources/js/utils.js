@@ -17,22 +17,22 @@
  * @param format {date} 传入要格式化的日期类型
  * @returns {2015-01-31 16:30:00}
  */
-Date.prototype.dateFormat = function (format){
+Date.prototype.dateFormat = function (format) {
     var o = {
-        "M+" : this.getMonth()+1, //month
-        "d+" : this.getDate(), //day
-        "h+" : this.getHours(), //hour
-        "m+" : this.getMinutes(), //minute
-        "s+" : this.getSeconds(), //second
-        "q+" : Math.floor((this.getMonth()+3)/3), //quarter
-        "S" : this.getMilliseconds() //millisecond
+        "M+": this.getMonth() + 1, //month
+        "d+": this.getDate(), //day
+        "h+": this.getHours(), //hour
+        "m+": this.getMinutes(), //minute
+        "s+": this.getSeconds(), //second
+        "q+": Math.floor((this.getMonth() + 3) / 3), //quarter
+        "S": this.getMilliseconds() //millisecond
     }
-    if(/(y+)/.test(format)) {
-        format = format.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    if (/(y+)/.test(format)) {
+        format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
     }
-    for(var k in o) {
-        if(new RegExp("("+ k +")").test(format)) {
-            format = format.replace(RegExp.$1, RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+    for (var k in o) {
+        if (new RegExp("(" + k + ")").test(format)) {
+            format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
         }
     }
     return format;
@@ -48,11 +48,11 @@ var dateUtil = {
      * @param date{date} 传入日期类型
      * @returns {星期四，...}
      */
-    nowFewWeeks:function(date){
-        if(date instanceof Date){
-            var dayNames = new Array("星期天","星期一","星期二","星期三","星期四","星期五","星期六");
+    nowFewWeeks: function (date) {
+        if (date instanceof Date) {
+            var dayNames = new Array("星期天", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六");
             return dayNames[date.getDay()];
-        } else{
+        } else {
             return "Param error,date type!";
         }
     },
@@ -62,11 +62,11 @@ var dateUtil = {
      * @param str {String}字符串格式的日期，传入格式：yyyy-mm-dd(2015-01-31)
      * @return {Date}由字符串转换成的日期
      */
-    strTurnDate:function(str){
-        var   re   =   /^(\d{4})\S(\d{1,2})\S(\d{1,2})$/;
-        var   dt;
-        if   (re.test(str)){
-            dt   =   new   Date(RegExp.$1,RegExp.$2   -   1,RegExp.$3);
+    strTurnDate: function (str) {
+        var re = /^(\d{4})\S(\d{1,2})\S(\d{1,2})$/;
+        var dt;
+        if (re.test(str)) {
+            dt = new Date(RegExp.$1, RegExp.$2 - 1, RegExp.$3);
         }
         return dt;
     },
@@ -78,11 +78,11 @@ var dateUtil = {
      * @endDate {Date}结束日期
      * @return endDate - startDate的天数差
      */
-    dayMinus:function(startDate, endDate){
-        if(startDate instanceof Date && endDate instanceof Date){
-            var days = Math.floor((endDate-startDate)/(1000 * 60 * 60 * 24));
+    dayMinus: function (startDate, endDate) {
+        if (startDate instanceof Date && endDate instanceof Date) {
+            var days = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
             return days;
-        }else{
+        } else {
             return "Param error,date type!";
         }
     }
@@ -99,21 +99,21 @@ var loadUtil = {
      * @param fileurl 文件路径，
      * @param filetype 文件类型，支持传入类型，js、css
      */
-    loadjscssfile:function(fileurl,filetype){
-        if(filetype == "js"){
+    loadjscssfile: function (fileurl, filetype) {
+        if (filetype == "js") {
             var fileref = document.createElement('script');
-            fileref.setAttribute("type","text/javascript");
-            fileref.setAttribute("src",fileurl);
-        }else if(filetype == "css"){
+            fileref.setAttribute("type", "text/javascript");
+            fileref.setAttribute("src", fileurl);
+        } else if (filetype == "css") {
 
             var fileref = document.createElement('link');
-            fileref.setAttribute("rel","stylesheet");
-            fileref.setAttribute("type","text/css");
-            fileref.setAttribute("href",fileurl);
+            fileref.setAttribute("rel", "stylesheet");
+            fileref.setAttribute("type", "text/css");
+            fileref.setAttribute("href", fileurl);
         }
-        if(typeof fileref != "undefined"){
+        if (typeof fileref != "undefined") {
             document.getElementsByTagName("head")[0].appendChild(fileref);
-        }else{
+        } else {
             alert("loadjscssfile method error!");
         }
     }
@@ -205,4 +205,30 @@ function download(filename, text) {
     element.click();
 
     document.body.removeChild(element);
+}
+
+/**
+ * 滚动条位置
+ * @returns {{top: number, left: number, width: number, height: number}}
+ * @constructor
+ */
+function ScollPostion() {
+    var t, l, w, h;
+    if (document.documentElement && document.documentElement.scrollTop) {
+        t = document.documentElement.scrollTop;
+        l = document.documentElement.scrollLeft;
+        w = document.documentElement.scrollWidth;
+        h = document.documentElement.scrollHeight;
+    } else if (document.body) {
+        t = document.body.scrollTop;
+        l = document.body.scrollLeft;
+        w = document.body.scrollWidth;
+        h = document.body.scrollHeight;
+    }
+    return {
+        top: t,
+        left: l,
+        width: w,
+        height: h
+    };
 }

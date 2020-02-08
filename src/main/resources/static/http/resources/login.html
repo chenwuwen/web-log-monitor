@@ -56,7 +56,7 @@
             <!--            </div>-->
 
             <div class="layui-form-item">
-                <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="web-log-login-submit">登 入</button>
+                <button id="login_btn" class="layui-btn layui-btn-fluid" lay-submit lay-filter="web-log-login-submit">登 入</button>
             </div>
 
         </div>
@@ -88,6 +88,7 @@
 </div>
 
 <script src="layui/layui.all.js"></script>
+<script src="js/jquery.min.js"></script>
 <script src="js/axios.min.js"></script>
 <script src="js/qs.js"></script>
 <script type="application/javascript">
@@ -103,6 +104,14 @@
         layer = layui.layer;
     })
 
+    // 回车键提交表单
+    $(document).keydown(function (e) {
+        if (e.keyCode === 13) {
+            $("#login_btn").trigger("click");
+        }
+    });
+
+    // 提交表单
     layui.use('form', function () {
         let form = layui.form;
         form.on('submit(web-log-login-submit)', function (data) {

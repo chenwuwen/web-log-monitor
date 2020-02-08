@@ -1,6 +1,8 @@
 package cn.kanyun.monitor.logback.util;
 
 
+import cn.kanyun.monitor.logback.common.Constant;
+
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.security.MessageDigest;
@@ -25,11 +27,13 @@ public class Utils {
 
     /**
      * 将资源文件读取成字符串
+     *
      * @param resource
      * @return
      * @throws IOException
      */
     public static String readFromResource(String resource) throws IOException {
+//        System.out.println(resource);
         InputStream in = null;
         try {
             in = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
@@ -50,6 +54,7 @@ public class Utils {
 
     /**
      * 读取资源文件返回字节数组
+     *
      * @param resource
      * @return
      * @throws IOException
@@ -127,13 +132,6 @@ public class Utils {
         }
     }
 
-    public static String toString(java.util.Date date) {
-        if (date == null) {
-            return null;
-        }
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return format.format(date);
-    }
 
     public static String getStackTrace(Throwable ex) {
         StringWriter buf = new StringWriter();
@@ -326,8 +324,8 @@ public class Utils {
     public static String hex(int hash) {
         byte[] bytes = new byte[4];
 
-        bytes[3] = (byte) (hash       );
-        bytes[2] = (byte) (hash >>>  8);
+        bytes[3] = (byte) (hash);
+        bytes[2] = (byte) (hash >>> 8);
         bytes[1] = (byte) (hash >>> 16);
         bytes[0] = (byte) (hash >>> 24);
 
@@ -350,8 +348,8 @@ public class Utils {
     public static String hex(long hash) {
         byte[] bytes = new byte[8];
 
-        bytes[7] = (byte) (hash       );
-        bytes[6] = (byte) (hash >>>  8);
+        bytes[7] = (byte) (hash);
+        bytes[6] = (byte) (hash >>> 8);
         bytes[5] = (byte) (hash >>> 16);
         bytes[4] = (byte) (hash >>> 24);
         bytes[3] = (byte) (hash >>> 32);
@@ -377,8 +375,8 @@ public class Utils {
     public static String hex_t(long hash) {
         byte[] bytes = new byte[8];
 
-        bytes[7] = (byte) (hash       );
-        bytes[6] = (byte) (hash >>>  8);
+        bytes[7] = (byte) (hash);
+        bytes[6] = (byte) (hash >>> 8);
         bytes[5] = (byte) (hash >>> 16);
         bytes[4] = (byte) (hash >>> 24);
         bytes[3] = (byte) (hash >>> 32);
@@ -403,7 +401,15 @@ public class Utils {
         return new String(chars);
     }
 
-
+    /**
+     * 得到静态文件的绝对路径
+     *
+     * @param relativeFilePath 静态文件的相对路径
+     * @return
+     */
+    public static String getFilePath(String relativeFilePath) {
+        return Constant.STATIC_FILE_PREFIX + relativeFilePath;
+    }
 
 }
 

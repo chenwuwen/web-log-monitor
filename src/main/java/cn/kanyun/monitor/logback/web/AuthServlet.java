@@ -1,6 +1,7 @@
 package cn.kanyun.monitor.logback.web;
 
 import cn.kanyun.monitor.logback.common.Constant;
+import com.google.common.io.Resources;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -8,6 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Properties;
 
 /**
  * 认证端点
@@ -15,9 +19,20 @@ import java.io.IOException;
 @WebServlet(name = "auth", urlPatterns = {"/web/log/auth", "/web/log/login", "/web/log/*"})
 public class AuthServlet extends HttpServlet {
 
+    private static String USER_NAME = "admin";
+    private static String PASSWORD = "admin";
 
     @Override
     public void init() throws ServletException {
+        try {
+            URL url = Resources.getResource(Constant.CONFIG_FILE_PATH);
+            Properties properties = new Properties();
+            properties.load(url.openStream());
+            USER_NAME = properties.get(Constant.CONFIG_USERNAME_KEY).toString();
+            PASSWORD = properties.get(Constant.CONFIG_PASSWORD_KEY).toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -35,7 +50,7 @@ public class AuthServlet extends HttpServlet {
         String password = req.getParameter(Constant.PARAM_NAME_PASSWORD);
         System.out.printf("WebLog进行登录,用户名：%s  密码：%s \n", username, password);
         //验证输入的用户名和密码
-        if ("admin".equals(username) && "admin".equals(password)) {
+        if (USER_NAME.equals(username) && PASSWORD.equals(password)) {
             //请求重定向
             req.getSession().setAttribute(Constant.SESSION_USER_KEY, username);
             resp.getWriter().write("success");
