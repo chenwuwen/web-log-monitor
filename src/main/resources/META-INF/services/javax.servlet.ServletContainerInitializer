@@ -1,1 +1,1 @@
-cn.kanyun.monitor.logback.listener.WebLogMonitorServletContainerInitializer
+cn.kanyun.monitor.logback.WebLogMonitorServletContainerInitializer

@@ -2,6 +2,7 @@ package cn.kanyun.monitor.logback.filter;
 
 import cn.kanyun.monitor.logback.util.Utils;
 import lombok.extern.slf4j.Slf4j;
+import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;

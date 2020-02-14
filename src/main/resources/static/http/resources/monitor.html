@@ -96,10 +96,10 @@
     })
 
     // 生产环境不建议使用console.log(),因为会耗费性能 这段代码会使console.log()什么都不做
-    // window.console = {
-    //     log: function () {
-    //     }
-    // }
+    window.console = {
+        log: function () {
+        }
+    }
 
     if (!!window.EventSource) {
         // web logger sse监听 使用 SSE 时，浏览器首先生成一个EventSource实例，向服务器发起连接。 withCredentials属性，表示是否一起发送 Cookie

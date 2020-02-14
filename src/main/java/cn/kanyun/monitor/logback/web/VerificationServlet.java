@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * 登录成功后验证
  */
-@WebServlet(name = "VerificationServlet", urlPatterns = {"/web/log/verification"})
+@WebServlet(name = "VerificationServlet", urlPatterns = {"/web/log/verification"}, asyncSupported = true)
 public class VerificationServlet extends HttpServlet {
 
     @Override

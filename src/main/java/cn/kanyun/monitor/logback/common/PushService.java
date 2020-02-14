@@ -3,6 +3,7 @@ package cn.kanyun.monitor.logback.common;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -44,7 +45,7 @@ public class PushService {
             .create();
 
 
-    public void push(HttpServletResponse resp) throws IOException {
+    public void push(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         resp.setContentType("text/event-stream");
         resp.setCharacterEncoding("UTF-8");
@@ -92,7 +93,7 @@ public class PushService {
 //       初始化延时0毫秒启动,每次间隔500毫秒
         scheduledExecutorService.scheduleAtFixedRate(() -> {
 
-            System.out.println("定时器执行");
+//            System.out.println("定时器执行");
             LogMessage logMessage = logQueue.poll();
             if (logMessage != null) {
                 String data = gson.toJson(logMessage);
@@ -115,15 +116,44 @@ public class PushService {
         }, 0, 500, TimeUnit.MILLISECONDS);
 
 
+//        session有效标志
+        boolean sessionStatus = true;
 //        这里放置一个死循环会为了防止response关闭
         while (!CLOSE_FLAG) {
             try {
                 Thread.sleep(1);
+                sessionStatus = verificationSession(req);
 //                System.out.println("正在进行死循环,为了防止response输出流关闭");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+        if (!sessionStatus) {
+//            如果session无效,将会重定向到登陆页,进行重新登录
+            resp.sendRedirect("/web/log/login.html");
+        }
+//        如果session有效,但是又进行到了这里,说明是推送出错,此时前端将会进行重试
+    }
+
+
+    /**
+     * 验证session是否有效
+     * 无效Session将会重定向
+     *
+     * @param req
+     */
+    public boolean verificationSession(HttpServletRequest req) {
+        if (req.getSession() == null) {
+            CLOSE_FLAG = true;
+            return false;
+        }
+
+        if (req.getSession().getAttribute(Constant.SESSION_USER_KEY) == null) {
+            CLOSE_FLAG = true;
+            return false;
+        }
+
+        return true;
     }
 }
 

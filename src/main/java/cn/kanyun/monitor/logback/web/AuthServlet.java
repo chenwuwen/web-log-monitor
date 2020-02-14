@@ -16,7 +16,7 @@ import java.util.Properties;
 /**
  * 认证端点
  */
-@WebServlet(name = "auth", urlPatterns = {"/web/log/auth", "/web/log/login", "/web/log/*"})
+@WebServlet(name = "auth", urlPatterns = {"/web/log/auth", "/web/log/login", "/web/log/*"}, asyncSupported = true)
 public class AuthServlet extends HttpServlet {
 
     private static String USER_NAME = "admin";
@@ -39,8 +39,14 @@ public class AuthServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("Get请求WebLog,将返回登录页");
         String contextPath = req.getContextPath();
+        String servletPath = req.getServletPath();
+//        判断顺序不能乱
         if (contextPath.equals("") || contextPath.equals("/")) {
             resp.sendRedirect("/web/log/login.html");
+        } else if (!servletPath.endsWith("/")) {
+            resp.sendRedirect(contextPath + "/web/log/login.html");
+        } else {
+            resp.sendRedirect("login.html");
         }
     }
 

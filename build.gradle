@@ -85,5 +85,7 @@ dependencies {
 
     implementation group: 'com.google.guava', name: 'guava', version: '28.2-jre'
 
+    implementation group: 'uk.org.lidalia', name: 'sysout-over-slf4j', version: '1.0.2'
+
 
 }

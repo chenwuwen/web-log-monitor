@@ -3,7 +3,7 @@
 #### 1.功能描述
 >**WebLogMonitor**是一款轻量的,几乎0侵入式的查看系统日志的插件,适用于java web,传统项目查看日志往往需要登录到服务器
 >找到对应的java进程,并查看日志,使用十分不便！使用该插件,可以在浏览器页面查看到实时的日志输出,同时集成了认证功能,大大减轻了调试的难度,
->目前只支持logback，不支持System.out 输出
+>目前只支持Slf4j/logback
 
 #### 2.适用场景
 > 首先需要声明的是,这个插件并不是用来代替目前主流的日志系统,它存在的意义更多的是方便开发人员进行调试
@@ -58,6 +58,36 @@ cn.kanyun.monitor.logback.filter.WebLogFilter
         </filter>
     </appender>
 ```
+
+如果你的项目使用的Servlet版本低于3.0(通过web.xml查看),那么需要更换为Servlet3.0版本的头
+```xml
+
+<?xml version="1.0" encoding="UTF-8"?>  
+   
+<web-app  
+        version="3.0"  
+        xmlns="http://java.sun.com/xml/ns/javaee"  
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">  
+</web-app>
+
+```
+
+同时在web.xml的Filter 配置中添加异步支持
+
+```xml
+  <filter>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <async-supported>true</async-supported>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>utf-8</param-value>
+    </init-param>
+  </filter>
+
+```
+
 这样就配置完成了。
 
 
