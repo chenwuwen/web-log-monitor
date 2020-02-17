@@ -1,6 +1,6 @@
-package cn.kanyun.monitor.logback.listener;
+package cn.kanyun.log.listener;
 
-import cn.kanyun.monitor.logback.common.Constant;
+import cn.kanyun.log.common.Constant;
 
 import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSession;

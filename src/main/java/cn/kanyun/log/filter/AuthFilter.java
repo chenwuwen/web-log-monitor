@@ -1,6 +1,6 @@
-package cn.kanyun.monitor.logback.filter;
+package cn.kanyun.log.filter;
 
-import cn.kanyun.monitor.logback.common.Constant;
+import cn.kanyun.log.common.Constant;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;

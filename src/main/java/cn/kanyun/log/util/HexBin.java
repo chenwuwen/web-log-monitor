@@ -1,4 +1,4 @@
-package cn.kanyun.monitor.logback.util;
+package cn.kanyun.log.util;
 
 public final class HexBin {
 

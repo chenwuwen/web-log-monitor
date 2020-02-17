@@ -1,4 +1,4 @@
-package cn.kanyun.monitor.logback.common;
+package cn.kanyun.log.common;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

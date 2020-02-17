@@ -1,6 +1,6 @@
-package cn.kanyun.monitor.logback.web;
+package cn.kanyun.log.web;
 
-import cn.kanyun.monitor.logback.common.Constant;
+import cn.kanyun.log.common.Constant;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

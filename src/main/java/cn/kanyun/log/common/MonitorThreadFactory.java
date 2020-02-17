@@ -1,4 +1,4 @@
-package cn.kanyun.monitor.logback.common;
+package cn.kanyun.log.common;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,7 +12,7 @@ public class MonitorThreadFactory implements ThreadFactory {
     /**
      * 线程名前缀
      */
-    private static final String THREAD_GROUP_NAME = "web-log-monitor";
+    private static final String THREAD_GROUP_NAME = "web-log-log";
 
     /**
      * 线程序号

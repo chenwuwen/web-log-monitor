@@ -1,18 +1,21 @@
-package cn.kanyun.monitor.logback;
+package cn.kanyun.log;
 
-import cn.kanyun.monitor.logback.common.WebLogMonitorContext;
-import cn.kanyun.monitor.logback.common.WebLogMonitorContextFactory;
-import cn.kanyun.monitor.logback.filter.AuthFilter;
-import cn.kanyun.monitor.logback.filter.StaticFileFilter;
-import cn.kanyun.monitor.logback.filter.WebLogFilter;
-import cn.kanyun.monitor.logback.listener.WebLogMonitorContextListener;
-import cn.kanyun.monitor.logback.listener.WebLogSessionListener;
-import cn.kanyun.monitor.logback.web.AuthServlet;
-import cn.kanyun.monitor.logback.web.LogServlet;
-import cn.kanyun.monitor.logback.web.VerificationServlet;
-import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
+import cn.kanyun.log.common.WebLogMonitorContextFactory;
+import cn.kanyun.log.filter.AuthFilter;
+import cn.kanyun.log.filter.StaticFileFilter;
+import cn.kanyun.log.listener.WebLogMonitorContextListener;
+import cn.kanyun.log.listener.WebLogSessionListener;
+import cn.kanyun.log.common.WebLogMonitorContext;
+import cn.kanyun.log.web.AuthServlet;
+import cn.kanyun.log.web.LogServlet;
+import cn.kanyun.log.web.VerificationServlet;
 
-import javax.servlet.*;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
 import javax.servlet.annotation.HandlesTypes;
 import java.util.EnumSet;
 import java.util.Set;

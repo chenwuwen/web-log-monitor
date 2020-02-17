@@ -1,10 +1,13 @@
-package cn.kanyun.monitor.logback.filter;
+package cn.kanyun.log.filter;
 
-import cn.kanyun.monitor.logback.util.Utils;
-import lombok.extern.slf4j.Slf4j;
-import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
+import cn.kanyun.log.util.Utils;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

@@ -1,4 +1,4 @@
-package cn.kanyun.monitor.logback.common;
+package cn.kanyun.log.common;
 
 public final class WebLogMonitorContext implements WebLogMonitorContextFactory {
 

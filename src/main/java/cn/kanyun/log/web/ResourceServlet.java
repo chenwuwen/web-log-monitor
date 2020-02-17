@@ -1,8 +1,8 @@
-package cn.kanyun.monitor.logback.web;
+package cn.kanyun.log.web;
 
-import cn.kanyun.monitor.logback.util.IPAddress;
-import cn.kanyun.monitor.logback.util.IPRange;
-import cn.kanyun.monitor.logback.util.Utils;
+import cn.kanyun.log.util.IPAddress;
+import cn.kanyun.log.util.IPRange;
+import cn.kanyun.log.util.Utils;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 

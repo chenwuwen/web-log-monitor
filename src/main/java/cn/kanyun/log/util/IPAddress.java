@@ -1,4 +1,4 @@
-package cn.kanyun.monitor.logback.util;
+package cn.kanyun.log.util;
 
 import java.util.NoSuchElementException;
 

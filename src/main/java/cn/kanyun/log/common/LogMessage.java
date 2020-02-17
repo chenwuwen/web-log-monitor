@@ -1,4 +1,4 @@
-package cn.kanyun.monitor.logback.common;
+package cn.kanyun.log.common;
 
 import lombok.Data;
 

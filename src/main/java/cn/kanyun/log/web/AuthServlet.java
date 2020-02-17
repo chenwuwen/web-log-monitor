@@ -1,6 +1,6 @@
-package cn.kanyun.monitor.logback.web;
+package cn.kanyun.log.web;
 
-import cn.kanyun.monitor.logback.common.Constant;
+import cn.kanyun.log.common.Constant;
 import com.google.common.io.Resources;
 
 import javax.servlet.ServletException;
@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Properties;
 

@@ -1,4 +1,4 @@
-package cn.kanyun.monitor.logback.listener;
+package cn.kanyun.log.listener;
 
 import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
 

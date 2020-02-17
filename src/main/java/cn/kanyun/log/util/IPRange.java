@@ -1,4 +1,4 @@
-package cn.kanyun.monitor.logback.util;
+package cn.kanyun.log.util;
 
 /**
  * This class represents an IP Range, which are represented by an IP address and and a subnet mask. The standards

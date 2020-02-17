@@ -1,4 +1,4 @@
-package cn.kanyun.monitor.logback.common;
+package cn.kanyun.log.common;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

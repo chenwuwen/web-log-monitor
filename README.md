@@ -2,8 +2,8 @@
 
 #### 1.功能描述
 >**WebLogMonitor**是一款轻量的,几乎0侵入式的查看系统日志的插件,适用于java web,传统项目查看日志往往需要登录到服务器
->找到对应的java进程,并查看日志,使用十分不便！使用该插件,可以在浏览器页面查看到实时的日志输出,同时集成了认证功能,大大减轻了调试的难度,
->目前只支持Slf4j/logback
+找到对应的java进程,并查看日志,使用十分不便！使用该插件,可以在浏览器页面查看到实时的日志输出,同时集成了简单的认证功能,大大减轻了调试的难度,
+目前支持logback/log4j/log4j2,配合Slf4j服用效果更佳！
 
 #### 2.适用场景
 > 首先需要声明的是,这个插件并不是用来代替目前主流的日志系统,它存在的意义更多的是方便开发人员进行调试
@@ -45,8 +45,8 @@
 添加依赖之后,可以通过在classpath 下创建web_log_monitor.properties文件(不是必须),[这里](https://github.com/chenwuwen/web_log_monitor/blob/master/web_log_monitor.properties)
 可以在该配置文件中定义自己的配置
 
-配置完成后,在logback的配置文件中的appender中添加一个filter
-cn.kanyun.monitor.logback.filter.WebLogFilter
+~~配置完成后,在logback的配置文件中的appender中添加一个filter
+cn.kanyun.log.appender.WebLogLogBackFilter~~
 
 ```xml
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -54,12 +54,57 @@ cn.kanyun.monitor.logback.filter.WebLogFilter
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
         </encoder>
-        <filter class="cn.kanyun.monitor.logback.filter.WebLogFilter">
+        <filter class="cn.kanyun.log.appender.WebLogLogBackFilter">
         </filter>
     </appender>
 ```
 
+>LogBack配置
+```xml
+<configuration>
+
+    <appender name="WebLogMonitor" class="cn.kanyun.log.appender.WebLogLogBackAppender">
+    </appender>
+    
+    <root level="info">
+        <appender-ref ref="WebLogMonitor"/>
+    </root>
+        
+</configuration>
+```
+
+>Log4j2 配置
+
+```xml
+
+<configuration status="warn" monitorInterval="30" packages="cn.kanyun.log.appender">
+        <!--先定义所有的appender-->
+    <appenders>
+         <!--这个就是自定义的Appender -->
+        <WebLogLog4j2Appender name="WebLogAppender" appName="web_log_monitor"/>
+    </appenders>
+     <!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
+        <loggers>
+           <root level="all">
+               <appender-ref ref="WebLogAppender"/>
+           </root>
+        </loggers>
+</configuration>
+
+```
+
+>Log4j配置
+
+```properties
+
+log4j.rootLogger=info,A1,R,WebLogLog4JAppender
+# 注册 自定义的Log4jAppender
+log4j.appender.WebLogLog4JAppender=cn.kanyun.log.appender.WebLogLog4JAppender
+```
+
+
 如果你的项目使用的Servlet版本低于3.0(通过web.xml查看),那么需要更换为Servlet3.0版本的头
+
 ```xml
 
 <?xml version="1.0" encoding="UTF-8"?>  

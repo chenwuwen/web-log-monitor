@@ -1,13 +1,24 @@
-package cn.kanyun.monitor.logback.util;
+package cn.kanyun.log.util;
 
 
-import cn.kanyun.monitor.logback.common.Constant;
+import cn.kanyun.log.common.Constant;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Properties;
 
@@ -411,5 +422,17 @@ public class Utils {
         return Constant.STATIC_FILE_PREFIX + relativeFilePath;
     }
 
+    /**
+     * 时间转换
+     *
+     * @param time
+     * @return
+     */
+    public static String convertTimeToString(Long time) {
+//        如果time不为空,则程序继续往下执行
+        assert time != null;
+        DateTimeFormatter ftf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return ftf.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
+    }
 }
 
