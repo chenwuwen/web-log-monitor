@@ -127,6 +127,7 @@ public class StaticFileFilter implements Filter {
                 || relativeFilePath.endsWith(".eot")
                 || relativeFilePath.endsWith(".woff2")
                 || relativeFilePath.endsWith(".woff")) {
+//            System.out.println(filePath);
             byte[] bytes = Utils.readByteArrayFromResource(filePath);
             if (bytes != null) {
                 response.getOutputStream().write(bytes);

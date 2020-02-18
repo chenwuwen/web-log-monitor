@@ -96,10 +96,10 @@
     })
 
     // 生产环境不建议使用console.log(),因为会耗费性能 这段代码会使console.log()什么都不做
-    window.console = {
-        log: function () {
-        }
-    }
+    // window.console = {
+    //     log: function () {
+    //     }
+    // }
 
     if (!!window.EventSource) {
         // web logger sse监听 使用 SSE 时，浏览器首先生成一个EventSource实例，向服务器发起连接。 withCredentials属性，表示是否一起发送 Cookie
@@ -118,9 +118,43 @@
 
         // 客户端收到服务器发来的数据，就会触发message事件，可以在onmessage属性定义回调函数
         // 已经设置了textarea为readOnly,之所以没有设置为disabled是因为disabled不能复制,同时需要注意,接收的内容是需要追加到textarea中的
-        source.onmessage = function (event) {
-            console.log("SSE 服务端推送日志信息")
+        // 为什么不使用source.onmessage,因为它监听的默认是"message"事件类型,其他事件类型的消息,不会触发这个回调,因此改用 source.addEventListener(事件类型,function(event){})
+        // source.onmessage = function (event) {
+        //     console.log("SSE 服务端推送日志信息,事件类型：" + event.type);
+        //     // 待插入的Dom
+        //     let log_segment_dom;
+        //
+        //     // console.log(event);
+        //     let res = event.data
+        //     // String类型
+        //     console.log("event.data 类型:" + typeof res);
+        //     console.log(res);
+        //
+        //     // 如果是空json,就不继续执行了
+        //     if (res == "{}") {
+        //         return
+        //     }
+        //
+        //     // 将json字符转转换为json对象
+        //     res = JSON.parse(res);
+        //
+        //     // 使用art-template模板引擎渲染
+        //     log_segment_dom = template('log_segment_html', res);
+        //
+        //     $("#web_log").children(".log_container").append(log_segment_dom)
+        //
+        //     // 新加入的元素,其实就是log_segment_dom,但是这里需要用jquery去获取添加后的dom
+        //     let newElement = $(".log_container").children("div:last-child")[0]
+        //
+        //     // 设置滚动条位置
+        //     setScrollPosition(newElement)
+        // };
 
+
+        // 接收日志消息
+        // 已经设置了textarea为readOnly,之所以没有设置为disabled是因为disabled不能复制,同时需要注意,接收的内容是需要追加到textarea中的
+        source.addEventListener("WebLogMonitor", function (event) {
+            console.log("消息类型：" + event.type)
             // 待插入的Dom
             let log_segment_dom;
 
@@ -148,9 +182,35 @@
 
             // 设置滚动条位置
             setScrollPosition(newElement)
+        })
 
+        // 接受重定向消息
+        source.addEventListener("Redirect", function (event) {
+            console.log("消息类型：" + event.type)
+            // 这里为什么把source.close()放在了前面?是因为如果接收到重定向消息,那么服务端就已经关闭了response流,此时如果不先关闭source,则会触发onerror()方法,因此需要先关闭source
+            source.close()
 
-        };
+            let index = layer.open({
+                type: 0,  //可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                title: ['警告', 'font-size:18px; color:orange;'],//数组第二项可以写任意css样式；如果你不想显示标题栏，你可以title: false
+                content: '检测到用户从其他位置登录!',
+                btn: ['重新登录', '留在此页'],
+                btnAlign: 'r',
+                closeBtn: 0,
+                yes: function(index, layero){
+                    // layero是当前层的DOM对象
+                    window.location.href = event.data
+                    layer.close(index); //如果设定了yes回调，需进行手工关闭
+                },
+                btn2: function(index, layero){
+                    layer.close(index)
+                    layer.msg('将不再接受推送信息', {
+                        time: 2000 //20s后自动关闭
+                    });
+                }
+            });
+
+        })
 
         // 如果发生通信错误（比如连接中断），就会触发error事件，可以在onerror属性定义回调函数
         source.onerror = function (event) {
@@ -164,12 +224,6 @@
         // 浏览器不支持 Server-Sent..
         console.log("当前浏览器不支持Server-Sent Event");
     }
-
-
-
-
-
-
 
 
 </script>

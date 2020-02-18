@@ -10,7 +10,11 @@ import java.io.PrintWriter;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * 推送服务
+ */
 public class PushService {
 
 
@@ -25,9 +29,9 @@ public class PushService {
     LogQueue logQueue = LogQueue.INSTANCE;
 
     /**
-     * 请求关闭标志
+     * 浏览器默认的是，如果服务器端三秒内没有发送任何信息，则开始重连。服务器端可以用retry头信息，指定通信的最大间隔时间。
      */
-    private static Boolean CLOSE_FLAG = Boolean.FALSE;
+    private static final String RETRY = "retry:" + 30 * 1000 + "\n";
 
 
     /**
@@ -57,18 +61,11 @@ public class PushService {
 //        一次请求的标志
         boolean request = true;
 
-//        重置连接关闭标志
-        CLOSE_FLAG = Boolean.FALSE;
+//        重置连接关闭标志(该变量有两种情况会变为true,一种是推送出错,一种是session失效)
+        AtomicBoolean CLOSE_FLAG = new AtomicBoolean(false);
 
-//        浏览器默认的是，如果服务器端三秒内没有发送任何信息，则开始重连。服务器端可以用retry头信息，指定通信的最大间隔时间。
-//        EventSource接收数据的固定格式：retry:${毫秒数}\ndata:${返回数据}\n\n
-//        retry是指每隔多久请求一次服务器，data是指要接收的数据。注意这个retry参数不是必须的，如果不填写，对应的浏览器会有一个默认间隔时间，谷歌默认是3000毫秒，也就是3秒钟
-        String retry = "retry:" + 30 * 1000 + "\n";
-        pw.write(retry);
-//        自定义事件
-        pw.write("event: " + "WebLogMonitor\n");
 
-//        如果是第一次请求,或者是sse的断开重连,那么死循环将日志队列中的数据取出并发送到前段,当队列为空时,再定时从队列中取数据
+//        如果是第一次请求,或者是sse的断开重连,那么死循环将日志队列中的数据取出并发送到前端,当队列为空时,再定时从队列中取数据
         while (request) {
             try {
 //                解决死循环CPU占用100%问题
@@ -83,6 +80,11 @@ public class PushService {
                 continue;
             }
             String data = gson.toJson(logMessage);
+//         EventSource接收数据的固定格式：retry:${毫秒数}\ndata:${返回数据}\n\n
+//         retry是指每隔多久请求一次服务器，data是指要接收的数据。注意这个retry参数不是必须的，如果不填写，对应的浏览器会有一个默认间隔时间，谷歌默认是3000毫秒，也就是3秒钟
+            pw.write(RETRY);
+//          自定义事件类型(日志推送事件)
+            pw.write("event: " + "WebLogMonitor\n");
             pw.write("data:" + data + "\n\n");
             if (pw.checkError()) {
                 System.out.println("首次连接WebLog客户端断开连接");
@@ -97,6 +99,11 @@ public class PushService {
             LogMessage logMessage = logQueue.poll();
             if (logMessage != null) {
                 String data = gson.toJson(logMessage);
+//              EventSource接收数据的固定格式：retry:${毫秒数}\ndata:${返回数据}\n\n
+//              retry是指每隔多久请求一次服务器，data是指要接收的数据。注意这个retry参数不是必须的，如果不填写，对应的浏览器会有一个默认间隔时间，谷歌默认是3000毫秒，也就是3秒钟
+                pw.write(RETRY);
+//              自定义事件类型(日志推送事件)
+                pw.write("event: " + "WebLogMonitor\n");
 //              固定格式
                 pw.write("data:" + data + "\n\n");
             }
@@ -107,7 +114,7 @@ public class PushService {
             if (pw.checkError()) {
 //            checkError()方法中已经调用了flush()方法,因此不必再调用flush()方法
                 System.out.println("定时取出数据WebLog客户端断开连接");
-                CLOSE_FLAG = Boolean.TRUE;
+                CLOSE_FLAG.set(true);
 //                关闭线程池
                 scheduledExecutorService.shutdown();
                 return;
@@ -116,21 +123,23 @@ public class PushService {
         }, 0, 500, TimeUnit.MILLISECONDS);
 
 
-//        session有效标志
-        boolean sessionStatus = true;
 //        这里放置一个死循环会为了防止response关闭
-        while (!CLOSE_FLAG) {
+        while (!CLOSE_FLAG.get()) {
             try {
                 Thread.sleep(1);
-                sessionStatus = verificationSession(req);
+                verificationSession(req, CLOSE_FLAG);
 //                System.out.println("正在进行死循环,为了防止response输出流关闭");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        if (!sessionStatus) {
-//            如果session无效,将会重定向到登陆页,进行重新登录
-            resp.sendRedirect("/web/log/login.html");
+
+        if (!verificationSession(req, CLOSE_FLAG)) {
+//            如果session失效,将会重定向到登陆页,进行重新登录
+            System.out.println("SESSION失效,重定向到登录页");
+//            这里不用resp.sendRedirect()是因为SSE是异步请求,因此直接使用,无法达到效果,所以可以通过推送自定义事件,让前端进行重定向
+//            resp.sendRedirect("/web/log/login.html");
+            redirect("/web/log/", pw);
         }
 //        如果session有效,但是又进行到了这里,说明是推送出错,此时前端将会进行重试
     }
@@ -142,18 +151,33 @@ public class PushService {
      *
      * @param req
      */
-    public boolean verificationSession(HttpServletRequest req) {
+    public boolean verificationSession(HttpServletRequest req, AtomicBoolean CLOSE_FLAG) {
         if (req.getSession() == null) {
-            CLOSE_FLAG = true;
+            CLOSE_FLAG.set(true);
             return false;
         }
 
         if (req.getSession().getAttribute(Constant.SESSION_USER_KEY) == null) {
-            CLOSE_FLAG = true;
+            CLOSE_FLAG.set(true);
             return false;
         }
 
         return true;
+    }
+
+
+    /**
+     * 重定向
+     *
+     * @param url
+     * @param pw
+     */
+    public void redirect(String url, PrintWriter pw) {
+        System.out.println("发送重定向消息 ");
+//        自定义事件(日志推送事件)
+        pw.write("event: " + "Redirect\n");
+        pw.write("data:" + url + "\n\n");
+        pw.flush();
     }
 }
 

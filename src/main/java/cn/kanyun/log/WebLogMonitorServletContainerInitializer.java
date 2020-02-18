@@ -3,6 +3,7 @@ package cn.kanyun.log;
 import cn.kanyun.log.common.WebLogMonitorContextFactory;
 import cn.kanyun.log.filter.AuthFilter;
 import cn.kanyun.log.filter.StaticFileFilter;
+import cn.kanyun.log.listener.AuthSessionListener;
 import cn.kanyun.log.listener.WebLogMonitorContextListener;
 import cn.kanyun.log.listener.WebLogSessionListener;
 import cn.kanyun.log.common.WebLogMonitorContext;
@@ -89,6 +90,7 @@ public class WebLogMonitorServletContainerInitializer implements ServletContaine
         //注册Listener
         servletContext.addListener(WebLogMonitorContextListener.class);
         servletContext.addListener(WebLogSessionListener.class);
+        servletContext.addListener(AuthSessionListener.class);
 
         //注册Filter  FilterRegistration
         FilterRegistration.Dynamic filter = servletContext.addFilter("authFilter", AuthFilter.class);
