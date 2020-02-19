@@ -1,5 +1,8 @@
 package cn.kanyun.log.common;
 
+/**
+ * 常量类
+ */
 public class Constant {
 
     /**
@@ -49,5 +52,13 @@ public class Constant {
      * properties配置文件黑名单key
      */
     public static final String CONFIG_DENY_KEY = "web_log_monitor.deny";
+
+    /**
+     * properties配置文件获取请求IP的请求头key
+     * 这个key对应的值是有限个的
+     * 参考：https://blog.csdn.net/jek123456/article/details/90716316
+     * https://www.cnblogs.com/zwdx/p/8989663.html
+     */
+    public static final String CONFIG_REMOTE_ADDRESS_REQUEST_HEADER = "web_log_monitor.remote_address_request_header";
 
 }

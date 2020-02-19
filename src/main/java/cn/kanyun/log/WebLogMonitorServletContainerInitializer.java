@@ -1,12 +1,13 @@
 package cn.kanyun.log;
 
+import cn.kanyun.log.common.WebLogMonitorContext;
 import cn.kanyun.log.common.WebLogMonitorContextFactory;
 import cn.kanyun.log.filter.AuthFilter;
+import cn.kanyun.log.filter.EffectiveRequestFilter;
 import cn.kanyun.log.filter.StaticFileFilter;
 import cn.kanyun.log.listener.AuthSessionListener;
 import cn.kanyun.log.listener.WebLogMonitorContextListener;
 import cn.kanyun.log.listener.WebLogSessionListener;
-import cn.kanyun.log.common.WebLogMonitorContext;
 import cn.kanyun.log.web.AuthServlet;
 import cn.kanyun.log.web.LogServlet;
 import cn.kanyun.log.web.VerificationServlet;
@@ -92,13 +93,22 @@ public class WebLogMonitorServletContainerInitializer implements ServletContaine
         servletContext.addListener(WebLogSessionListener.class);
         servletContext.addListener(AuthSessionListener.class);
 
-        //注册Filter  FilterRegistration
+        //注册Filter  FilterRegistration 注册时需要注意注册顺序,因为如果多个过滤器过滤的URL一样的话,此时过滤器执行的顺序是过滤器添加的顺序
+
+//        权限认证过滤器
         FilterRegistration.Dynamic filter = servletContext.addFilter("authFilter", AuthFilter.class);
 
         //配置Filter的映射信息
         filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/web/log/push/*");
+        filter.setAsyncSupported(true);
 
-        servletContext.addFilter("staticFileFilter", StaticFileFilter.class);
+//        IP认证过滤器
+        servletContext.addFilter("effectiveRequestFilter", EffectiveRequestFilter.class).setAsyncSupported(true);
+
+        servletContext.getFilterRegistration("effectiveRequestFilter").addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/web/log/*");
+
+//        静态资源文件过滤器
+        servletContext.addFilter("staticFileFilter", StaticFileFilter.class).setAsyncSupported(true);
 
         servletContext.getFilterRegistration("staticFileFilter").addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/web/log/*");
 

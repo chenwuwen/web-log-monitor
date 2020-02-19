@@ -12,6 +12,8 @@ public class OnLineUser {
     /**
      * 创建只有一个容量的阻塞队列,用于存放session
      * 用于登录踢出功能,web-log-monitor同时只允许一个人登录
+     * 由于只有一个用户,且只能同时一个地点登录,那么其实可以使用一个变量来定义的
+     * 之所以使用队列这个容器,可能是为了更直观吧,至少定义的时候我是这么想的
      */
     private static final BlockingQueue<HttpSession> blockingQueue = new ArrayBlockingQueue(1);
 
@@ -38,9 +40,29 @@ public class OnLineUser {
 
     /**
      * 判断该模块是否被登录过
+     *
      * @return
      */
     public static boolean hasLogin() {
         return blockingQueue.isEmpty();
+    }
+
+
+    /**
+     * 检测队列中保存的用户是否失效
+     */
+    public static void checkOnlineUser() {
+        if (!blockingQueue.isEmpty()) {
+//           这里为什么不使用element()，而使用peek()?他们都是返回队列头部元素,
+//           但是不删除头部元素,因为当队列为空时 peek()返回null,而element()抛出异常
+            HttpSession session = blockingQueue.peek();
+            if (session != null && session.getAttribute(Constant.SESSION_USER_KEY) != null) {
+
+            }else {
+//                这里为什么使用poll()而不是remove(),他们都是移除并返回队列头部的元素
+//                因为poll() 如果队列为空，则返回null 而remove()如果队列为空，则抛出一个NoSuchElementException异常
+                blockingQueue.poll();
+            }
+        }
     }
 }

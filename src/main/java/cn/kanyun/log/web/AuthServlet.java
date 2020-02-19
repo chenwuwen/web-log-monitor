@@ -1,6 +1,7 @@
 package cn.kanyun.log.web;
 
 import cn.kanyun.log.common.Constant;
+import com.google.common.base.Strings;
 import com.google.common.io.Resources;
 
 import javax.servlet.ServletException;
@@ -13,7 +14,9 @@ import java.net.URL;
 import java.util.Properties;
 
 /**
- * 认证端点
+ * 认证端点,用于返回登录页,和提交登录请求
+ *
+ * @author KANYUN
  */
 @WebServlet(name = "auth", urlPatterns = {"/web/log/auth", "/web/log/login", "/web/log/*"}, asyncSupported = true)
 public class AuthServlet extends HttpServlet {
@@ -27,8 +30,14 @@ public class AuthServlet extends HttpServlet {
             URL url = Resources.getResource(Constant.CONFIG_FILE_PATH);
             Properties properties = new Properties();
             properties.load(url.openStream());
-            USER_NAME = properties.get(Constant.CONFIG_USERNAME_KEY).toString();
-            PASSWORD = properties.get(Constant.CONFIG_PASSWORD_KEY).toString();
+            String userName = properties.get(Constant.CONFIG_USERNAME_KEY).toString();
+            if (!Strings.isNullOrEmpty(userName)) {
+                USER_NAME = userName;
+            }
+            String password = properties.get(Constant.CONFIG_PASSWORD_KEY).toString();
+            if (!Strings.isNullOrEmpty(password)) {
+                PASSWORD = password;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

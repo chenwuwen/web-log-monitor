@@ -3,6 +3,7 @@ package cn.kanyun.log.util;
 import java.util.NoSuchElementException;
 
 /**
+ * 将字符串形式的ip地址封装为IPAddress对象,方便对比黑/白名单
  * @author kanyun
  * @version 1.0
  */
@@ -36,9 +37,10 @@ public class IPAddress implements Cloneable {
 
     /**
      * Return the string representation of the IP Address following the common decimal-dotted notation xxx.xxx.xxx.xxx.
-     *
+     * 返回IP地址的字符串表示形式，遵循常用的小数点符号 xxx.xxx.xxx.xxx
      * @return Return the string representation of the IP address.
      */
+    @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         int temp;
@@ -101,7 +103,7 @@ public class IPAddress implements Cloneable {
 
     /**
      * Convert a decimal-dotted notation representation of an IP address into an 32 bits interger value.
-     *
+     * 将IP地址的十进制点符号表示形式转换为32位整数值
      * @param ipAddressStr Decimal-dotted notation (xxx.xxx.xxx.xxx) of the IP address.
      * @return Return the 32 bits integer representation of the IP address.
      * @throws InvalidIPAddressException Throws this exception if the specified IP address is not compliant to the
@@ -117,7 +119,7 @@ public class IPAddress implements Cloneable {
         try {
             String tmp = ipAddressStr;
 
-            // get the 3 first numbers
+            // 得到IP地址的前三位数字如 192.168.0.1 此时得到192/168/0
             int offset = 0;
             for (int i = 0; i < 3; i++) {
 
@@ -144,7 +146,7 @@ public class IPAddress implements Cloneable {
                 }
             }
 
-            // the remaining part of the string should be the last number.
+            // 字符串的剩余部分应该是最后一个数字
             if (tmp.length() > 0) {
                 int number = Integer.parseInt(tmp);
                 if ((number < 0) || (number > 255)) {
@@ -165,10 +167,12 @@ public class IPAddress implements Cloneable {
         return result;
     }
 
+    @Override
     public int hashCode() {
         return this.ipAddress;
     }
 
+    @Override
     public boolean equals(Object another) {
         return another instanceof IPAddress && ipAddress == ((IPAddress) another).ipAddress;
     }
