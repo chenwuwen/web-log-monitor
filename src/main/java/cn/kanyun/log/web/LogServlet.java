@@ -1,6 +1,7 @@
 package cn.kanyun.log.web;
 
 import cn.kanyun.log.common.PushService;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,8 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * 推送日志
+ * 推送日志Servlet 实际推送逻辑{@link PushService}
+ * @author KANYUN
  */
+@Slf4j
 @WebServlet(name = "log", urlPatterns = "/web/log/push", asyncSupported = true)
 public class LogServlet extends HttpServlet {
 

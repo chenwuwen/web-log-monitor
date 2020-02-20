@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * 日志消息实体
+ * @author KANYUN
  */
 @Data
 public class LogMessage {

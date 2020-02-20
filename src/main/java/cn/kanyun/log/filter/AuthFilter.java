@@ -1,6 +1,7 @@
 package cn.kanyun.log.filter;
 
 import cn.kanyun.log.common.Constant;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -18,11 +19,12 @@ import java.io.IOException;
  * 注解形式的过滤器,则是根据当前类的名字的自然排序,因此这个值,应该存在规律
  * @author KANYUN
  */
+@Slf4j
 @WebFilter(filterName = "AuthFilter", urlPatterns = "/web/log/push/*", asyncSupported = true)
 public class AuthFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("AuthFilter init() 方法执行");
+        log.info("AuthFilter init() 方法执行");
     }
 
     @Override

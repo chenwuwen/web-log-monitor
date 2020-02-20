@@ -8,6 +8,7 @@ import org.apache.log4j.spi.LoggingEvent;
 
 /**
  * 自定义Log4j appender
+ * @author KANYUN
  */
 public class WebLogLog4JAppender extends AppenderSkeleton {
     private String appName;

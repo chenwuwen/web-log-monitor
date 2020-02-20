@@ -2,6 +2,7 @@ package cn.kanyun.log.common;
 
 /**
  * 常量类
+ * @author KANYUN
  */
 public class Constant {
 

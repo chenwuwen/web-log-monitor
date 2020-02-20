@@ -11,6 +11,7 @@ import cn.kanyun.log.util.Utils;
  * LogBack过滤器
  * 不是Servlet的filter
  * 弃用 使用Logback自定义的appender
+ * @author KANYUN
  */
 @Deprecated
 public class WebLogLogBackFilter extends Filter<ILoggingEvent> {

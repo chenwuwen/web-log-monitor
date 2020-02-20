@@ -2,6 +2,7 @@ package cn.kanyun.log.listener;
 
 import cn.kanyun.log.common.Constant;
 import cn.kanyun.log.common.OnLineUser;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionAttributeListener;
@@ -11,7 +12,9 @@ import javax.servlet.http.HttpSessionBindingEvent;
  * Session属性变化监听器
  * 为什么用这个监听器来控制登录踢出
  * 而不是 {@link WebLogSessionListener}来控制：https://blog.csdn.net/joshho/article/details/79146867
+ * @author KANYUN
  */
+@Slf4j
 @WebListener(value = "AuthSessionListener")
 public class AuthSessionListener implements HttpSessionAttributeListener {
 

@@ -13,30 +13,30 @@
 
 <body class="layui-layout-body">
 
-    <div class="layui-row layui-col-space15" style="padding: 20px; background-color: #F2F2F2;">
+<div class="layui-row layui-col-space15" style="padding: 20px; background-color: #F2F2F2;">
 
-        <div class="layui-col-md12">
-            <div class="layui-card">
-                <div class="layui-card-header">
-                    日志输出
-                    <div class="layui-btn-group layuiadmin-btn-group">
-                        <button class="layui-btn layui-btn-primary layui-btn-xs" onClick="clearLog()">
-                            <i class="layui-icon layui-icon-delete"></i> 清空
-                        </button>
-                        <button class="layui-btn layui-btn-primary layui-btn-xs" onClick="downloadLog()">
-                            <i class="layui-icon layui-icon-download-circle"></i>下载
-                        </button>
-                    </div>
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                日志输出
+                <div class="layui-btn-group layuiadmin-btn-group">
+                    <button class="layui-btn layui-btn-primary layui-btn-xs" onClick="clearLog()">
+                        <i class="layui-icon layui-icon-delete"></i> 清空
+                    </button>
+                    <button class="layui-btn layui-btn-primary layui-btn-xs" onClick="downloadLog()">
+                        <i class="layui-icon layui-icon-download-circle"></i>下载
+                    </button>
+                </div>
+            </div>
+
+            <div id="web_log" class="layui-card-body layui-bg-black">
+                <!--日志内容区 contenteditable="true" 属性 可以使div的内容被编辑-->
+                <div class="layui-bg-black log_container">
+
                 </div>
 
-                <div id="web_log" class="layui-card-body layui-bg-black">
-                    <!--日志内容区-->
-                    <div contenteditable="true" class="layui-bg-black log_container">
-
-                    </div>
-
-                    <!-- 上翻页,下翻页,图标使用了：https://www.iconfont.cn/-->
-
+                <!-- 上翻页,下翻页,图标使用了：https://www.iconfont.cn/-->
+                <div class="page_container">
                     <div class="page">
                         <div class="page_item up_page" onclick="topPage()">
                             <svg class="icon" aria-hidden="true">
@@ -52,8 +52,10 @@
                 </div>
 
             </div>
+
         </div>
     </div>
+</div>
 
 </body>
 

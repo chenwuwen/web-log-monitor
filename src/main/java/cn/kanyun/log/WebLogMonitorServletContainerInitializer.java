@@ -11,6 +11,7 @@ import cn.kanyun.log.listener.WebLogSessionListener;
 import cn.kanyun.log.web.AuthServlet;
 import cn.kanyun.log.web.LogServlet;
 import cn.kanyun.log.web.VerificationServlet;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
@@ -42,8 +43,9 @@ import java.util.Set;
  * 1. 注册org.springframework.boot.context.embedded.ServletContextInitializer类型的Bean代替ServletContainerInitializer。
  * 2. 直接向容器注册Servlet和Filter。
  * 3. 向容器注册ServletRegistrationBean和FilterRegistrationBean。
+ * @author KANYUN
  */
-
+@Slf4j
 @HandlesTypes(value = {WebLogMonitorContextFactory.class})
 public class WebLogMonitorServletContainerInitializer implements ServletContainerInitializer {
 
@@ -56,12 +58,12 @@ public class WebLogMonitorServletContainerInitializer implements ServletContaine
      */
     @Override
     public void onStartup(Set<Class<?>> set, ServletContext servletContext) throws ServletException {
-        System.out.println("WebLogMonitorServletContainerInitializer类 onStartup()方法被调用");
+       log.info("WebLogMonitorServletContainerInitializer类 onStartup()方法被调用");
         if (set != null) {
-            System.out.println("感兴趣类型的数量:" + set.size());
+           log.info("感兴趣类型的数量:" + set.size());
 //        set集合中的值即为@HandlesTypes()注解中定义的类型
             for (Class<?> clazz : set) {
-                System.out.println(clazz);
+
                 if (clazz == WebLogMonitorContext.class) {
                     try {
                         WebLogMonitorContext webLogMonitorContext = (WebLogMonitorContext) clazz.newInstance();
@@ -113,6 +115,6 @@ public class WebLogMonitorServletContainerInitializer implements ServletContaine
         servletContext.getFilterRegistration("staticFileFilter").addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/web/log/*");
 
 
-        System.out.println("WebLogMonitorServletContainerInitializer类 onStartup()方法调用完成");
+       log.info("WebLogMonitorServletContainerInitializer类 onStartup()方法调用完成");
     }
 }

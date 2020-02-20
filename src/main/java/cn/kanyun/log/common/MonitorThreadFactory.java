@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 自定义线程工厂
  * 使用自定义的线程工厂ThreadFactory来进行创建，指定当时Thread的创建环境和名字，便于后续查找及发现问题。
+ * @author KANYUN
  */
 public class MonitorThreadFactory implements ThreadFactory {
 

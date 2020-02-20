@@ -1,6 +1,7 @@
 package cn.kanyun.log.filter;
 
 import cn.kanyun.log.util.Utils;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -21,7 +22,9 @@ import java.util.List;
  * Filter的过滤顺序：
  * web.xml中是按照注册Filter的顺序来决定过滤器执行顺序
  * 注解形式的过滤器,则是根据当前类的名字的自然排序,因此这个值,应该存在规律
+ * @author KANYUN
  */
+@Slf4j
 @WebFilter(filterName = "StaticFileFilter", urlPatterns = "/web/log/*", asyncSupported = true)
 public class StaticFileFilter implements Filter {
 

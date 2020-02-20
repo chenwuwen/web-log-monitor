@@ -5,10 +5,13 @@ import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import cn.kanyun.log.common.LogMessage;
 import cn.kanyun.log.common.LogQueue;
 import cn.kanyun.log.util.Utils;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Logback自定义appender
+ * @author KANYUN
  */
+@Slf4j
 public class WebLogLogBackAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
     private static final LogQueue logQueue = LogQueue.INSTANCE;
@@ -22,7 +25,9 @@ public class WebLogLogBackAppender extends UnsynchronizedAppenderBase<ILoggingEv
     @Override
     protected void append(ILoggingEvent iLoggingEvent) {
         LogMessage loggerMessage = new LogMessage();
-        loggerMessage.setBody(iLoggingEvent.getMessage());
+//        iLoggingEvent.getMessage() 得到的是拼接前的日志 比如 使用log.info("Hello {}","World)
+//        得到的是"Hello {}" getFormattedMessage()得到的是拼接后的数据
+        loggerMessage.setBody(iLoggingEvent.getFormattedMessage());
 //        event.getTimeStamp()得到的时间是时间抽 将其转换为 yyyy-MM-dd HH:mm:ss 形式
         loggerMessage.setTimestamp(Utils.convertTimeToString(iLoggingEvent.getTimeStamp()));
         loggerMessage.setLevel(iLoggingEvent.getLevel().levelStr);
@@ -40,7 +45,7 @@ public class WebLogLogBackAppender extends UnsynchronizedAppenderBase<ILoggingEv
     @Override
     public void stop() {
         //释放相关资源，如数据库连接，redis线程池等等
-        System.out.println("logback-stop方法被调用");
+        log.info("logback-stop方法被调用");
         if (!isStarted()) {
             return;
         }

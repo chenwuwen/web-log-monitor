@@ -3,6 +3,7 @@ package cn.kanyun.log.web;
 import cn.kanyun.log.common.Constant;
 import com.google.common.base.Strings;
 import com.google.common.io.Resources;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,6 +19,7 @@ import java.util.Properties;
  *
  * @author KANYUN
  */
+@Slf4j
 @WebServlet(name = "auth", urlPatterns = {"/web/log/auth", "/web/log/login", "/web/log/*"}, asyncSupported = true)
 public class AuthServlet extends HttpServlet {
 
@@ -62,7 +64,7 @@ public class AuthServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String username = req.getParameter(Constant.PARAM_NAME_USERNAME);
         String password = req.getParameter(Constant.PARAM_NAME_PASSWORD);
-        System.out.printf("WebLog进行登录,用户名：%s  密码：%s \n", username, password);
+        log.info("WebLogMonitor进行登录,用户名：[{}]  密码：[{}]", username, password);
         //验证输入的用户名和密码
         if (USER_NAME.equals(username) && PASSWORD.equals(password)) {
             //请求重定向

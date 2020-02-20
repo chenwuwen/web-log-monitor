@@ -5,6 +5,7 @@ import cn.kanyun.log.util.IPAddress;
 import cn.kanyun.log.util.IPRange;
 import com.google.common.base.Strings;
 import com.google.common.io.Resources;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -29,6 +30,7 @@ import java.util.Properties;
  *
  * @author KANYUN
  */
+@Slf4j
 @WebFilter(filterName = "EffectiveRequestFilter", urlPatterns = "/web/log/*", asyncSupported = true)
 public class EffectiveRequestFilter implements Filter {
 
@@ -52,7 +54,7 @@ public class EffectiveRequestFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("EffectiveRequestFilter init() 初始化方法执行");
+        log.info("EffectiveRequestFilter init() 初始化方法执行");
         try {
             URL url = Resources.getResource(Constant.CONFIG_FILE_PATH);
             Properties properties = new Properties();
@@ -75,12 +77,12 @@ public class EffectiveRequestFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         if (isPermittedRequest(httpServletRequest)) {
-            System.out.println("远程IP通过了EffectiveRequestFilter过滤器的IP认证,有权进行访问！");
+            log.info("远程IP通过了EffectiveRequestFilter过滤器的IP认证,有权进行访问！");
             chain.doFilter(request, response);
             return;
         }
 //      如果访问IP在黑名单中,或者不在白名单中,拒绝请求,直接返回
-        System.out.println("远程IP未通过EffectiveRequestFilter过滤器的IP认证,无权进行访问！");
+        log.info("远程IP未通过EffectiveRequestFilter过滤器的IP认证,无权进行访问！");
 //      实际上如果没有通过IP认证的请求,我根本就不想给客户端任何响应,但看别人都会返回一个无权访问的页面,那我也就返回一串文字吧,其实我内心是拒绝的
         response.getWriter().write("Not Allowed!");
     }

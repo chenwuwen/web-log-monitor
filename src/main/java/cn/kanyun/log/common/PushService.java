@@ -2,6 +2,7 @@ package cn.kanyun.log.common;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,13 +16,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * 推送服务
  */
+@Slf4j
 public class PushService {
 
 
     /**
      * 创建定时循环线程池
      */
-    private static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1, new MonitorThreadFactory());
+    private static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1, new MonitorThreadFactory());
 
     /**
      * 得到日志队列
@@ -38,7 +40,7 @@ public class PushService {
      * 实例化Gson实例,需要注意的是gson会默认将特殊字符转化成unicode编码
      * 因此需要禁用Gson将特殊字符转换为unicode编码
      */
-    Gson gson = new GsonBuilder()
+    private static final Gson gson = new GsonBuilder()
 //            .excludeFieldsWithoutExposeAnnotation() //不对没有用@Expose注解的属性进行操作
 //            .enableComplexMapKeySerialization() //当Map的key为复杂对象时,需要开启该方法
             .serializeNulls() //当字段值为空或null时，依然对该字段进行转换
@@ -49,6 +51,12 @@ public class PushService {
             .create();
 
 
+    /**
+     * 推送消息
+     * @param req
+     * @param resp
+     * @throws IOException
+     */
     public void push(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         resp.setContentType("text/event-stream");
@@ -87,7 +95,7 @@ public class PushService {
             pw.write("event: " + "WebLogMonitor\n");
             pw.write("data:" + data + "\n\n");
             if (pw.checkError()) {
-                System.out.println("首次连接WebLog客户端断开连接");
+                log.info("首次连接WebLog客户端断开连接");
                 return;
             }
         }
@@ -95,7 +103,7 @@ public class PushService {
 //       初始化延时0毫秒启动,每次间隔500毫秒
         scheduledExecutorService.scheduleAtFixedRate(() -> {
 
-//            System.out.println("定时器执行");
+//            log.info("定时器执行");
             LogMessage logMessage = logQueue.poll();
             if (logMessage != null) {
                 String data = gson.toJson(logMessage);
@@ -113,10 +121,17 @@ public class PushService {
 //            我们只需它的调用checkError()，有错误的话return即可停止执行(如果打印流遇到了一个错误该方法返回true，无论是在基础输出流或在格式转换过程。)
             if (pw.checkError()) {
 //            checkError()方法中已经调用了flush()方法,因此不必再调用flush()方法
-                System.out.println("定时取出数据WebLog客户端断开连接");
+                log.info("定时取出数据WebLog客户端断开连接");
                 CLOSE_FLAG.set(true);
-//                关闭线程池
-                scheduledExecutorService.shutdown();
+                try {
+//                  关闭线程池
+                    scheduledExecutorService.shutdown();
+                    if (scheduledExecutorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                        log.info("=========PushService 线程池已关闭========");
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 return;
             }
 
@@ -128,7 +143,7 @@ public class PushService {
             try {
                 Thread.sleep(1);
                 verificationSession(req, CLOSE_FLAG);
-//                System.out.println("正在进行死循环,为了防止response输出流关闭");
+//                log.info("正在进行死循环,为了防止response输出流关闭");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -136,7 +151,7 @@ public class PushService {
 
         if (!verificationSession(req, CLOSE_FLAG)) {
 //            如果session失效,将会重定向到登陆页,进行重新登录
-            System.out.println("SESSION失效,重定向到登录页");
+            log.info("SESSION失效,重定向到登录页");
 //            这里不用resp.sendRedirect()是因为SSE是异步请求,因此直接使用,无法达到效果,所以可以通过推送自定义事件,让前端进行重定向
 //            resp.sendRedirect("/web/log/login.html");
             redirect("/web/log/", pw);
@@ -173,7 +188,7 @@ public class PushService {
      * @param pw
      */
     public void redirect(String url, PrintWriter pw) {
-        System.out.println("发送重定向消息 ");
+        log.info("发送重定向消息 ");
 //        自定义事件(日志推送事件)
         pw.write("event: " + "Redirect\n");
         pw.write("data:" + url + "\n\n");

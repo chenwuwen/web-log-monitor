@@ -21,6 +21,7 @@ import java.io.Serializable;
  * 这里需要注意，配置文件中,需要在configuration中，加入属性packages为自定义appender类所在包名cn.kanyun.log.appender才会被扫描生效
  * 构造函数：除了使用父类的以外，也可以增加一些自己的配置。
  * 重写append()方法：这里面需要实现具体的逻辑，日志的去向
+ * @author KANYUN
  *
  */
 @Plugin(name = "WebLogLog4j2Appender", category = "Core", elementType = "appender", printObject = true)

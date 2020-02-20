@@ -3,8 +3,18 @@ package cn.kanyun.log.common;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * 日志队列,用于临时保存日志
+ * 单例模式
+ *
+ * @author KANYUN
+ */
+
 public enum LogQueue {
 
+    /**
+     * 队列实例对象
+     */
     INSTANCE;
 
     /**

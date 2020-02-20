@@ -74,8 +74,8 @@ task createDirs() {
 
 dependencies {
 
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
     implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
 

@@ -7,6 +7,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * 在线用户,用于登录踢出,一个账户只能在一处登录,
  * 当然在这个模块里,只有一个用户
+ * @author KANYUN
  */
 public class OnLineUser {
     /**

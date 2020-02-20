@@ -1,5 +1,6 @@
 package cn.kanyun.log.listener;
 
+import lombok.extern.slf4j.Slf4j;
 import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
 
 import javax.servlet.ServletContext;
@@ -12,7 +13,9 @@ import javax.servlet.annotation.WebListener;
  * 它能够监听 ServletContext 对象的生命周期，实际上就是监听 Web 应用的生命周期
  * 一个模块只能有一个ServletContextListener的实例
  * 需要注意的是：ServletContextListener只能定义一个,一旦第一个ServletContextListener被调用,就不会再添加ServletContextListener了
+ * @author KANYUN
  */
+@Slf4j
 @WebListener(value = "WebLogMonitorContextListener")
 public class WebLogMonitorContextListener implements ServletContextListener {
 
@@ -25,11 +28,11 @@ public class WebLogMonitorContextListener implements ServletContextListener {
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        System.out.println("=================================================");
-        System.out.println("WebLogMonitorContextListener监听器,监听到web容器启动");
+        log.info("=================================================");
+        log.info("WebLogMonitorContextListener监听器,监听到web容器启动");
         String path = sce.getServletContext().getContextPath();
         System.out.printf("访问日志URL：[%s] \n", path + "/web/log");
-        System.out.println("=================================================");
+        log.info("=================================================");
 
         ServletContext servletContext = sce.getServletContext();
 
@@ -38,14 +41,14 @@ public class WebLogMonitorContextListener implements ServletContextListener {
         String serverInfo = servletContext.getServerInfo();
 
 //        打印运行容器的名称及版本
-        System.out.println("运行的容器信息:" + serverInfo);
+        log.info("运行的容器信息:" + serverInfo);
 
 //        Springboot如果需要使用外置tomcat部署,需要继承SpringBootServletInitializer
 
 //        用于将System.out/System.err/e.printStackTrace() 输出到Slf4j,否则 无法获取System.out/System.err/e.printStackTrace() 输出的信息
         SysOutOverSLF4J.sendSystemOutAndErrToSLF4J();
 
-        System.out.println("WebLogMonitorContextListener监听器,contextInitialized()方法执行完成 ");
+        log.info("WebLogMonitorContextListener监听器,contextInitialized()方法执行完成 ");
     }
 
     /**
@@ -55,6 +58,6 @@ public class WebLogMonitorContextListener implements ServletContextListener {
      */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        System.out.println("WebLogMonitorContextListener监听器,监听到web容器关闭");
+        log.info("WebLogMonitorContextListener监听器,监听到web容器关闭");
     }
 }
