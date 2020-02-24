@@ -55,6 +55,11 @@ public class Constant {
     public static final String CONFIG_DENY_KEY = "web_log_monitor.deny";
 
     /**
+     * properties配置文件 日志文件 目录 key
+     */
+    public static final String CONFIG_LOG_FILE_PATH = "web_log_monitor.log_file_path";
+
+    /**
      * properties配置文件获取请求IP的请求头key
      * 这个key对应的值是有限个的
      * 参考：https://blog.csdn.net/jek123456/article/details/90716316

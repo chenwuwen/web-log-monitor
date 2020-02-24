@@ -7,16 +7,12 @@ import com.google.common.base.Strings;
 import com.google.common.io.Resources;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -77,14 +73,14 @@ public class EffectiveRequestFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         if (isPermittedRequest(httpServletRequest)) {
-            log.info("远程IP通过了EffectiveRequestFilter过滤器的IP认证,有权进行访问！");
+//            log.info("远程IP通过了EffectiveRequestFilter过滤器的IP认证,有权进行访问！");
             chain.doFilter(request, response);
             return;
         }
 //      如果访问IP在黑名单中,或者不在白名单中,拒绝请求,直接返回
-        log.info("远程IP未通过EffectiveRequestFilter过滤器的IP认证,无权进行访问！");
+        log.info("[{}] 远程IP未通过EffectiveRequestFilter过滤器的IP认证,无权进行访问！", LocalDateTime.now());
 //      实际上如果没有通过IP认证的请求,我根本就不想给客户端任何响应,但看别人都会返回一个无权访问的页面,那我也就返回一串文字吧,其实我内心是拒绝的
-        response.getWriter().write("Not Allowed!");
+        response.getWriter().write("<p style=\"text-align: center;font-size: 50px\">Not Allowed!</p>");
     }
 
 

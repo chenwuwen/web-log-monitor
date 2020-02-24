@@ -141,7 +141,7 @@ public class PushService {
 //        这里放置一个死循环会为了防止response关闭
         while (!CLOSE_FLAG.get()) {
             try {
-                Thread.sleep(1);
+                Thread.sleep(250);
                 verificationSession(req, CLOSE_FLAG);
 //                log.info("正在进行死循环,为了防止response输出流关闭");
             } catch (InterruptedException e) {

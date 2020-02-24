@@ -9,6 +9,7 @@ import cn.kanyun.log.listener.AuthSessionListener;
 import cn.kanyun.log.listener.WebLogMonitorContextListener;
 import cn.kanyun.log.listener.WebLogSessionListener;
 import cn.kanyun.log.web.AuthServlet;
+import cn.kanyun.log.web.FileServlet;
 import cn.kanyun.log.web.LogServlet;
 import cn.kanyun.log.web.VerificationServlet;
 import lombok.extern.slf4j.Slf4j;
@@ -35,14 +36,15 @@ import java.util.Set;
  * 我们通常需要在该实现类上使用 @HandlesTypes 注解来指定希望被处理的类，过滤掉不希望给 onStartup() 处理的类。
  * 通过HandlesTypes可以将一些感兴趣类(必须是接口或者父类才能生效，接口方式更好，Spring Web就是使用接口这种方式)注入到ServletContainerInitializer的onStartup方法作为参数传入。
  * https://www.ibm.com/developerworks/cn/java/j-lo-servlet30/index.html
- *
+ * <p>
  * 这个类主要为SpringMvc配置,如果不在这个类中添加servlet/filter/listener servlet/filter/listener 将不会生效
- *
+ * <p>
  * 嵌入式环境下，SpringBoot有意忽略javax.servlet.ServletContainerInitializer
  * 解决方案：
  * 1. 注册org.springframework.boot.context.embedded.ServletContextInitializer类型的Bean代替ServletContainerInitializer。
  * 2. 直接向容器注册Servlet和Filter。
  * 3. 向容器注册ServletRegistrationBean和FilterRegistrationBean。
+ *
  * @author KANYUN
  */
 @Slf4j
@@ -58,9 +60,9 @@ public class WebLogMonitorServletContainerInitializer implements ServletContaine
      */
     @Override
     public void onStartup(Set<Class<?>> set, ServletContext servletContext) throws ServletException {
-       log.info("WebLogMonitorServletContainerInitializer类 onStartup()方法被调用");
+        log.info("WebLogMonitorServletContainerInitializer类 onStartup()方法被调用");
         if (set != null) {
-           log.info("感兴趣类型的数量:" + set.size());
+            log.info("感兴趣类型的数量:" + set.size());
 //        set集合中的值即为@HandlesTypes()注解中定义的类型
             for (Class<?> clazz : set) {
 
@@ -85,10 +87,12 @@ public class WebLogMonitorServletContainerInitializer implements ServletContaine
         ServletRegistration.Dynamic servlet = servletContext.addServlet("authServlet", new AuthServlet());
         servletContext.addServlet("verificationServlet", new VerificationServlet());
         servletContext.addServlet("logServlet", new LogServlet());
+        servletContext.addServlet("fileServlet", new FileServlet());
 //      主要用于动态为 Servlet 增加映射信息，这等价于在 web.xml( 抑或 web-fragment.xml) 中使用 <servlet-mapping> 标签为存在的 Servlet 增加映射信息
         servletContext.getServletRegistration("authServlet").addMapping("/web/log/auth", "/web/log/login", "/web/log/*");
         servletContext.getServletRegistration("verificationServlet").addMapping("/web/log/verification");
         servletContext.getServletRegistration("logServlet").addMapping("/web/log/push");
+        servletContext.getServletRegistration("fileServlet").addMapping("/web/log/file", "/web/log/file/*");
 
         //注册Listener
         servletContext.addListener(WebLogMonitorContextListener.class);
@@ -115,6 +119,6 @@ public class WebLogMonitorServletContainerInitializer implements ServletContaine
         servletContext.getFilterRegistration("staticFileFilter").addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/web/log/*");
 
 
-       log.info("WebLogMonitorServletContainerInitializer类 onStartup()方法调用完成");
+        log.info("WebLogMonitorServletContainerInitializer类 onStartup()方法调用完成");
     }
 }

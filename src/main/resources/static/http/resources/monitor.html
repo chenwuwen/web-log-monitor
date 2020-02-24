@@ -26,6 +26,9 @@
                     <button class="layui-btn layui-btn-primary layui-btn-xs" onClick="downloadLog()">
                         <i class="layui-icon layui-icon-download-circle"></i>下载
                     </button>
+                    <button class="layui-btn layui-btn-primary layui-btn-xs" onClick="displayFile()">
+                        <i class="layui-icon layui-icon-file-b"></i>文件
+                    </button>
                 </div>
             </div>
 
@@ -224,6 +227,13 @@
         console.log("当前浏览器不支持Server-Sent Event");
     }
 
+    /**
+     * 浏览日志文件目录
+     */
+    function displayFile() {
+        // 新页面打开
+        window.open('file', '_blank');
+    }
 
 </script>
 

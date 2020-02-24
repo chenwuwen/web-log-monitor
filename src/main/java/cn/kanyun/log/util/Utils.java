@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -442,6 +443,30 @@ public class Utils {
         assert time != null;
         DateTimeFormatter ftf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return ftf.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
+    }
+
+    /**
+     * 大小格式转换
+     *
+     * @param srcSize 单位是字节
+     * @return
+     */
+    public static String convertSizeToString(Long srcSize) {
+        if (srcSize == 0) {
+            return String.valueOf(0);
+        }
+        DecimalFormat df = new DecimalFormat("#.00");
+        String fileSizeString = "";
+        if (srcSize < 1024) {
+            fileSizeString = df.format((double) srcSize) + "B";
+        } else if (srcSize < 1048576) {
+            fileSizeString = df.format((double) srcSize / 1024) + "K";
+        } else if (srcSize < 1073741824) {
+            fileSizeString = df.format((double) srcSize / 1048576) + "M";
+        } else {
+            fileSizeString = df.format((double) srcSize / 1073741824) + "G";
+        }
+        return fileSizeString;
     }
 }
 
