@@ -105,7 +105,7 @@ public class WebLogMonitorServletContainerInitializer implements ServletContaine
         FilterRegistration.Dynamic filter = servletContext.addFilter("authFilter", AuthFilter.class);
 
         //配置Filter的映射信息
-        filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/web/log/push/*");
+        filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/web/log/push/*", "/web/log/file/*");
         filter.setAsyncSupported(true);
 
 //        IP认证过滤器

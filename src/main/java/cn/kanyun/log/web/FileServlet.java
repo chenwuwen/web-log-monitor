@@ -61,8 +61,8 @@ public class FileServlet extends HttpServlet {
             String pathInfo = req.getPathInfo();
 //            如果pathInfo ="/"  说明访问的是根目录,即rootPath
             if (Strings.isNullOrEmpty(pathInfo)) {
-//                说明访问的 web/log/file ,重定向到 web/log/file/
-                resp.sendRedirect("/web/log/file/");
+//                说明访问的 web/log/file ,重定向到 web/log/file/ 需要注意路径问题,使用相对路径或者绝对路径(如果使用绝对路径需要注意得加上contextPath)
+                resp.sendRedirect("file/");
                 return;
             }
             uri = new URI(pathInfo);

@@ -17,10 +17,11 @@ import java.io.IOException;
  * Filter的过滤顺序：
  * web.xml中是按照注册Filter的顺序来决定过滤器执行顺序
  * 注解形式的过滤器,则是根据当前类的名字的自然排序,因此这个值,应该存在规律
+ *
  * @author KANYUN
  */
 @Slf4j
-@WebFilter(filterName = "AuthFilter", urlPatterns = "/web/log/push/*", asyncSupported = true)
+@WebFilter(filterName = "AuthFilter", urlPatterns = {"/web/log/push/*", "/web/log/file/*"}, asyncSupported = true)
 public class AuthFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
