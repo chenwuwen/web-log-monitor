@@ -13,33 +13,20 @@
 
 
 #### 3.如何获得
-由于目前是快照版本,因此需要先添加仓库地址
-```xml
-<repositories>
- 
-<repository>
-    <id>snapshots</id>
-    <name>snapshots</name>
-    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-    <snapshots>
-        <enabled>true</enabled>
-    </snapshots>
-</repository>
- 
-</repositories>
-```
-添加完仓库后,就可以添加依赖了。
+maven pom.xml 添加依赖
 
 ```xml
 <dependency>
   <groupId>io.github.chenwuwen</groupId>
   <artifactId>web-log-monitor</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 </dependency>
 
 ```
-
-
+gradle build.gradle 添加依赖
+```groovy
+implementation group: 'io.github.chenwuwen', name: 'web-log-monitor', version: '1.0.0'
+```
 
 #### 4.如何使用
 添加依赖之后,可以通过在classpath 下创建web_log_monitor.properties文件(不是必须),[这里](https://github.com/chenwuwen/web_log_monitor/blob/master/web_log_monitor.properties)
@@ -118,7 +105,7 @@ log4j.appender.WebLogLog4JAppender=cn.kanyun.log.appender.WebLogLog4JAppender
 
 ```
 
-同时在web.xml的Filter 配置中添加异步支持
+~~同时在web.xml的Filter 配置中添加异步支持~~
 
 ```xml
   <filter>
@@ -140,6 +127,16 @@ log4j.appender.WebLogLog4JAppender=cn.kanyun.log.appender.WebLogLog4JAppender
 
 
 配置完成之后,就可以启动项目了。
+
+如果你使用的是Tomcat作为web容器,启动后抛出异常
+```text
+org.apache.tomcat.util.bcel.classfile.ClassFormatException:
+Invalid byte tag in constant pool: 19
+```
+
+那么请升级你的Tomcat版本
+
+未使用包管理工具的可以下载全量包
 
 启动项目之后。通过输入地址:  项目地址/web/log
 

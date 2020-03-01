@@ -2,7 +2,9 @@ plugins {
     id 'java'
     id 'maven'
     id 'maven-publish'
-//    加入这个插件,主要是为了在打包时可以将项目依赖的jar包同时打进去,执行gradlew shadow即可
+//    签名插件,上传到中央仓库的release版本的依赖需要签名
+    id 'signing'
+//    加入这个插件,主要是为了在打包时可以将项目依赖的jar包同时打进去,执行gradlew shadowJar即可
 //    https://plugins.gradle.org/plugin/com.github.johnrengelman.shadow
     id "com.github.johnrengelman.shadow" version "5.2.0"
 }
@@ -20,10 +22,28 @@ repositories {
     mavenCentral()
 }
 
+
 task sourcesJar(type: Jar) {
     archiveClassifier = 'sources'
     from sourceSets.main.java
 }
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+    options.author = true
+    options.version = true
+    options.header = project.name
+
+}
+
 
 //设置任务依赖关系,打jar包的同时,打源码包
 jar.dependsOn(sourcesJar)
@@ -35,11 +55,13 @@ jar.dependsOn(sourcesJar)
  */
 artifacts {
     archives sourcesJar
+    archives javadocJar
 }
+
 
 publishing {
     publications {
-        myPublication(MavenPublication) {
+        mavenJava(MavenPublication) {
 //            如果是war包填写components.web，如果是jar包填写components.java
             from components.java
 //            指定group/artifact/version信息，可以不填。默认使用项目group/name/version作为groupId/artifactId/version
@@ -47,8 +69,41 @@ publishing {
             groupId "io.github.chenwuwen"
             artifactId "$project.name"
             version "$version"
+//             增加这个签名名称所在的位置，signArchives 输出文件中以你项目名作为的 key。这里获取这一个签名文件
+//            artifact signArchives.outputFiles.get('fast_csv')
             artifact(sourcesJar) {
                 classifier = 'sources'
+//                extension = "zip"
+            }
+            artifact(javadocJar){
+                classifier = 'javadoc'
+            }
+
+
+//          添加 pom 相关信息,没有pom信息无法发布release版本
+            pom {
+                name = "web-log-monitor"
+                description = "方便的实时日志监控"
+                url = "http://www.example.com/project"
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "kanyun"
+                        name = "wuwen Chen"
+                        email = "2504954849@qq.com"
+                    }
+                }
+                scm {
+                    connection = "scm:git:https://github.com/chenwuwen/web-log-monitor.git"
+                    developerConnection = "scm:git:https://github.com/chenwuwen/web-log-monitor.git"
+                    url = "https://github.com/chenwuwen/web-log-monitor"
+                }
+
             }
         }
     }
@@ -64,12 +119,20 @@ publishing {
                 url "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
             }
             credentials {
-                username = 'kanyun'
-                password = 'Chenwuwen@@321'
+//                这里的变量是配置在操作系统的GRADLE_USER_HOME环境变量下的gradle.properties中,如果操作系统未配置该变量,那么gradle.properties应该在${USER_HOME}/.gradle下
+                username = "${NEXUS_USERNAME}"
+                password = "${NEXUS_PASSWORD}"
             }
         }
 
     }
+}
+
+
+// 签名配置 必须在 publishing 配置之后 上传release版本的构件需要此配置,其中私钥配置在操作系统的GRADLE_USER_HOME环境变量下的gradle.properties中
+signing {
+//    后面这个mavenJava需要跟上面的publishing{publications{}}下面的保持一致
+    sign publishing.publications.mavenJava
 }
 
 /**
@@ -84,17 +147,45 @@ task createDirs() {
     }
 }
 
-dependencies {
+//打全量包
+shadowJar {
+//    设定baseName,可以替代jar包名,默认为 模块名+version-all.jar 设定后为: baseName+version-all.jar
+//    baseName("看云")
+//    作用同上
+//    archiveBaseName = "123"
+    version(project.version)
+    description = "Web-log-Monitor全量包,如果引入的项目没有使用构建工具,则可以直接引入该包,避免了依赖嵌套的麻烦事,但是如果出现了依赖冲突,处理起来就会比较麻烦!"
+//    archiveClassifier
+    mergeServiceFiles()
+    dependencies {
+//        在打好的包中排除module-info.class文件,因为这个文件在某些tomcat的版本上会引起异常:org.apache.tomcat.util.bcel.classfile.ClassFormatException: Invalid byte tag in constant pool: 19
+        exclude 'module-info.class'
+    }
 
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+//    定制启动类文件
+//    manifest {
+//        attributes('Main-Class': 'exqudens.shadowjar.Application')
+//        attributes("Implementation-Title": "Shadow Jar")
+//        attributes("Implementation-Version": project.version)
+//    }
+}
+
+
+
+
+dependencies {
+//    lombok版本较高时,使用tomcat可能会报错:org.apache.tomcat.util.bcel.classfile.ClassFormatException: Invalid byte tag in constant pool: 19
+//    原因是新版本的lombok使用了JDK9的新特性,因此打包候会存在一个叫module-info.class的文件一些版本的tomcat启动时，如果classpath下有这个包就会报上面的错误,具体可自行查阅
+//    解决方案:降低lombok的版本[1.14.8]或者升级tomcat的版本[8.5+]或者删除打好的包中的module-info.class
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
 
     compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-
+//    logback依赖
     compileOnly group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
-
+//    log4j2的依赖
     compileOnly group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.0'
-
+//    slf4j-log4j12是链接slf4j-api和log4j中间的适配器
     compileOnly group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.30'
 
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
