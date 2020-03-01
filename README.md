@@ -28,6 +28,8 @@ gradle build.gradle 添加依赖
 implementation group: 'io.github.chenwuwen', name: 'web-log-monitor', version: '1.0.0'
 ```
 
+未使用包管理工具的自行[下载](https://github.com/chenwuwen/web-log-monitor/releases/download/v1.0.0/web-log-monitor-1.0.0-all.jar)全量包
+
 #### 4.如何使用
 添加依赖之后,可以通过在classpath 下创建web_log_monitor.properties文件(不是必须),[这里](https://github.com/chenwuwen/web_log_monitor/blob/master/web_log_monitor.properties)
 可以在该配置文件中定义自己的配置
@@ -134,9 +136,8 @@ org.apache.tomcat.util.bcel.classfile.ClassFormatException:
 Invalid byte tag in constant pool: 19
 ```
 
-那么请升级你的Tomcat版本
+那么请升级你的Tomcat版本。
 
-未使用包管理工具的可以下载全量包
 
 启动项目之后。通过输入地址:  项目地址/web/log
 
