@@ -6,10 +6,16 @@ import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.activation.MimetypesFileTypeMap;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
+import java.nio.file.OpenOption;
+import java.nio.file.StandardOpenOption;
 
 /**
  * Servlet处理文件
@@ -26,12 +32,13 @@ public class WebFileHandler {
     }
 
     /**
-     * 处理文件 下载
+     * 使用传统IO 处理文件 下载
      *
      * @param file
      * @param response
      * @throws IOException
      */
+    @Deprecated
     public void handleFile(File file, HttpServletResponse response) throws IOException {
         String filename = file.getName().toLowerCase();
         String contentType = getContentType(filename);
@@ -53,6 +60,36 @@ public class WebFileHandler {
             }
 
             in.close();
+            os.close();
+        } catch (FileNotFoundException ex) {
+            throw new IOException("File " + file + " not found.", ex);
+        }
+    }
+
+    /**
+     * 使用NIO 处理文件下载
+     * @param file
+     * @param response
+     * @throws IOException
+     */
+    public void nioHandleFile(File file, HttpServletResponse response) throws IOException {
+        String filename = file.getName().toLowerCase();
+        String contentType = getContentType(filename);
+        response.setContentType(contentType);
+
+        long length = file.length();
+        response.setHeader(ServletHeader.ContentLength.toString(), Long.toString(length));
+
+//        读文件通道
+        FileChannel readFileChannel = FileChannel.open(file.toPath(), StandardOpenOption.READ);
+        OutputStream os = response.getOutputStream();
+//        写文件通道
+        WritableByteChannel writableByteChannel = Channels.newChannel(os);
+//        零拷贝将数据从读通道写入写通道
+        readFileChannel.transferTo(0, readFileChannel.size(), writableByteChannel);
+        try {
+            readFileChannel.close();
+            writableByteChannel.close();
             os.close();
         } catch (FileNotFoundException ex) {
             throw new IOException("File " + file + " not found.", ex);
@@ -256,7 +293,7 @@ public class WebFileHandler {
         String fileName = file.getName();
         String webPath = this.getWebPath(file, request);
 
-//       使用Guava得到文件扩展名,没有扩展名：返回空字符串 只有扩展名：返回“.”之后的字符串，比如“gitignore”。
+//       使用Guava得到文件扩展名,没有扩展名：返回空字符串 只有扩展名：返回“.”之后的字符串，比如“gitIgnore”。
         String extension = Files.getFileExtension(fileName);
 //        文件夹样式类名
         String dirClassName = "icon icon-directory";
