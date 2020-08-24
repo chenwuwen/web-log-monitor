@@ -19,7 +19,7 @@ maven pom.xml 添加依赖
 <dependency>
   <groupId>io.github.chenwuwen</groupId>
   <artifactId>web-log-monitor</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 
 ```
